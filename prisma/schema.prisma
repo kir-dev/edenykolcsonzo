@@ -14,16 +14,50 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+enum RentalStatus {
+    REQUESTED
+    ACCEPTED
+    EXPIRED
+    BROUGHT_BACK
+}
 
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
+model Rental {
+    id               Int          @id @default(autoincrement())
+    userId           String
+    user             User         @relation(fields: [userId], references: [id])
+    status           RentalStatus @default(REQUESTED)
+    startDateMessage String
+    endDateMessage   String
+    startDate        DateTime
+    endDate          DateTime
+    createdAt        DateTime     @default(now())
+    updatedAt        DateTime     @updatedAt
+    ToolRental       ToolRental[]
+}
 
-    @@index([name])
+model Tool {
+    id          Int          @id @default(autoincrement())
+    name        String
+    description String
+    rentable    Boolean
+    quantity    Int
+    image       String?
+    createdAt   DateTime     @default(now())
+    updatedAt   DateTime     @updatedAt
+    ToolRental  ToolRental[]
+}
+
+model ToolRental {
+    rentalId            Int
+    rental              Rental   @relation(fields: [rentalId], references: [id])
+    toolId              Int
+    tool                Tool     @relation(fields: [toolId], references: [id])
+    quantity            Int
+    createdAt           DateTime @default(now())
+    updatedAt           DateTime @updatedAt
+    broughtBackQuantity Int?
+
+    @@id([rentalId, toolId])
 }
 
 // Necessary for Next auth
@@ -56,13 +90,23 @@ model Session {
 
 model User {
     id            String    @id @default(cuid())
-    name          String?
+    fullName      String?
+    nickname      String?
+    role          Role      @default(USER)
+    roomNumber    Int?
+    profileImage  String?
     email         String?   @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
-    posts         Post[]
+
+    Rental Rental[]
+}
+
+enum Role {
+    USER
+    EK_MEMBER
 }
 
 model VerificationToken {
