@@ -6,7 +6,7 @@ import { type Metadata } from "next";
 import { TRPCReactProvider } from "~/trpc/react";
 import { ThemeProvider } from "~/components/theme-provider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import Navbar from "~/components/common/navbar";
+import Navbar from "~/components/navbar/navbar";
 
 export const metadata: Metadata = {
   title: "EdénykölcsönzőSch",

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import NavItem from "./nav-item";
+import { ThemeToggleButton } from "./theme-toggle-button";
 
 const navItems = [
   { href: "/renting", title: "Bérlés" },
@@ -18,6 +19,7 @@ export default function Navbar() {
             <NavItem href={item.href} title={item.title} />
           </li>
         ))}
+        <ThemeToggleButton />
       </ul>
     </nav>
   );

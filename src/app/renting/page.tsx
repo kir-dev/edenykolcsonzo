@@ -1,4 +1,4 @@
-import ToolsOverview from "~/components/tools/tools-overview";
+import ToolsRentingOverview from "~/components/tools/tools-renting-overview";
 import { getServerAuthSession } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
 
@@ -14,7 +14,7 @@ export default async function RentingPage() {
   return (
     <HydrateClient>
       <main className="flex flex-1 flex-col items-center justify-center text-white">
-        <ToolsOverview />
+        <ToolsRentingOverview />
       </main>
     </HydrateClient>
   );

@@ -7,7 +7,10 @@ export default async function Home() {
 
   return (
     <HydrateClient>
-      <main className="flex flex-1 flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+      <main className="flex flex-1 flex-col bg-slate-200 p-4 text-white dark:bg-slate-800">
+        <h1 className="mb-4 text-2xl font-bold text-black dark:text-white">
+          Konyhai eszközök
+        </h1>
         <ToolsOverview />
       </main>
     </HydrateClient>
