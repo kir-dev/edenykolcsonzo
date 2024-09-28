@@ -3,6 +3,8 @@ import { type Prisma, PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
+  await prisma.tool.deleteMany();
+
   const tools: Prisma.ToolCreateInput[] = [
     {
       name: "Spatula",
@@ -10,7 +12,8 @@ async function main() {
         "Egy konyhai eszköz, amelyet forgatáshoz vagy kenéshez használnak.",
       rentable: true,
       quantity: 10,
-      image: "spatula.jpg",
+      image:
+        "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcTHC6OasOdQD-ZrisGSnSqmtUROrUXr9Xgq5tM22TOFVpxgcT2Y41JK5NqUsUFOlaSw4diAPWcOE80lXuMDfV-86lbYgR1j_ccnSa8SLuB06J1mlllAEbv-o6XzN_RuIkXKtjTr7cY&usqp=CAc",
     },
     {
       name: "Habverő",
@@ -18,7 +21,8 @@ async function main() {
         "Egy konyhai eszköz, amelyet habveréshez vagy keveréshez használnak.",
       rentable: true,
       quantity: 15,
-      image: "whisk.jpg",
+      image:
+        "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSiUP58i00ZXYId5zfohVgbCEI_lA4t12ut0LZlTxzRDST_H3K45l9blG3awls1RdjHG3c3yQr5jZexCjfW5EI86TJA1j5rIOwoD4-8IaJGYmdGYqpSbPm6iKyStLbS&usqp=CAc",
     },
     {
       name: "Séf kés",
@@ -26,7 +30,8 @@ async function main() {
         "Egy sokoldalú kés, amelyet különféle konyhai feladatokhoz használnak.",
       rentable: true,
       quantity: 5,
-      image: "chefs_knife.jpg",
+      image:
+        "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcS-1fnQ1_k83IGfV3cxbkvLqtYWv0USey0AntWiuj7PzMk2Bb5zYiFfmcSgdan9QzJfl4eu9KawU58MRhQ3bzc0JD1OUqdTN6Nx27z_W_h7KRxrNhA_aHjXH7II2Ko_M6vvEO-h-Q&usqp=CAc",
     },
     {
       name: "Vágódeszka",
@@ -34,14 +39,16 @@ async function main() {
         "Egy deszka, amelyet ételek vágásához és előkészítéséhez használnak.",
       rentable: true,
       quantity: 20,
-      image: "cutting_board.jpg",
+      image:
+        "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcSCqLqBC_v22-760o_Lj605pGI1SPGK2waYzdnV8bHvpyzVLdx8Nd2d8Dr7iv2es1Tr--Ki7mD7Xe651WJ-kG1Q4In7la6J3Ueb5SekVTYCZnHgewzRXn4QyDIE7dBZ9Cg8y6dvlA&usqp=CAc",
     },
     {
       name: "Mérőpoharak",
       description: "Poharak, amelyeket hozzávalók méréséhez használnak.",
       rentable: true,
       quantity: 25,
-      image: "measuring_cups.jpg",
+      image:
+        "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQnUR0gtRuH-35lX_LaEzDjXbFqidF18JuCnmwAsjBi68y12V1H5Xo21WhtTipKpzmHclkYrbN6B6-Nor_-tUI14JyYUhKp11RsAcuPTPTtLWLaWytMu63x0yf00Hs6dWnqKcwIHy4&usqp=CAc",
     },
     {
       name: "Mérőkanalak",
@@ -49,14 +56,16 @@ async function main() {
         "Kanalak, amelyeket kis mennyiségű hozzávalók méréséhez használnak.",
       rentable: true,
       quantity: 30,
-      image: "measuring_spoons.jpg",
+      image:
+        "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRLm9DpqCKzK7ns7pC9b1eRbXXuTvv3UVy7_7QIJbKlpS2mkga8nGDiZ8BNIzt0H8VG7pBFp8jra-UYpyTsze8FdBDe8ULT8r-HqKJBH12Xkd4vXB4hiUtPDwomS5NmO11awfqLV31WNA&usqp=CAc",
     },
     {
       name: "Keverőtál",
       description: "Egy tál, amelyet hozzávalók keveréséhez használnak.",
       rentable: true,
       quantity: 12,
-      image: "mixing_bowl.jpg",
+      image:
+        "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcQHfcJubBYtpInxij_QpBbjvIV4tWBrDbAxgjBYuzMz9ppc7vSrm7ngWkprWe4AGDSQavxnXy2RQ-WGCcN2Zqw2iMi8SzYxZ5NkwjBMByjyAMs89DVbNdWC0Ton8v0YglZ1BM19T5Q&usqp=CAc",
     },
     {
       name: "Hámozó",
@@ -64,7 +73,8 @@ async function main() {
         "Egy eszköz, amelyet gyümölcsök és zöldségek hámozásához használnak.",
       rentable: true,
       quantity: 18,
-      image: "peeler.jpg",
+      image:
+        "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcTnaEyGCH224jKXJHgcRIp9_uRUPDOGEfn_hASniRnvXbDWQnVYx-i6p4WN6Pe51HopsUXi1NGDttqbRJL0khPlPlO933q1mjPRdMiymQWKUmjW9tLE6T59ZZAerTdCQbzBsPipog&usqp=CAc",
     },
     {
       name: "Reszelő",
@@ -72,7 +82,8 @@ async function main() {
         "Egy eszköz, amelyet sajt vagy zöldségek reszeléséhez használnak.",
       rentable: true,
       quantity: 14,
-      image: "grater.jpg",
+      image:
+        "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRkGLBVTe7l03VoYMMwv1ce0CBaIOhhdhQ60MJ4Wuq-4gS-kPJ0rRWsRNYyR_mUGBzVJ4fQ6BQr6xvdwT4qGuxs9Zkj7XwIdkfaHE2XB6cUZ7Z3G2pyejfM6Z18-C8CMNktklTgag&usqp=CAc",
     },
     {
       name: "Szűrő",
@@ -80,7 +91,8 @@ async function main() {
         "Egy lyukakkal ellátott tál, amelyet folyadékok lecsöpögtetéséhez használnak.",
       rentable: true,
       quantity: 10,
-      image: "colander.jpg",
+      image:
+        "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQurBNroCUOta8zKWEvAmflDILf4BrSyPb1BtlHhQzOsjXHDc_ZQqJxPKutlu-24xtr_ZQsdodKQaW6cIThgu7gKDJxeLN-m_ENFiw5ydpQja6GtDi7x8FfbIGKwoaPZ5DawR-iRSLKfog&usqp=CAc",
     },
     {
       name: "Fogó",
@@ -88,21 +100,24 @@ async function main() {
         "Egy eszköz, amelyet ételek megfogásához és emeléséhez használnak.",
       rentable: true,
       quantity: 22,
-      image: "tongs.jpg",
+      image:
+        "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcSw4ZvdPKtJdbEvuJdHiWmbD6jbVHyqXDseBe_Ic17YCi4sAOFaQqTLiSIXCWTNUIyRsw0qdP2k81OxHyd1gAOlPmRmg2yfPhmmZT_xmxmeoQpfRrS51KX3iXlMkI1enmau2vjwrwLB69A&usqp=CAc",
     },
     {
       name: "Nyújtófa",
       description: "Egy eszköz, amelyet tészta kinyújtásához használnak.",
       rentable: true,
       quantity: 8,
-      image: "rolling_pin.jpg",
+      image:
+        "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcT9CIdBKpDMDvtj3_wvoZ6sFiCsuZZviMl3Qg1nX8TLQDXUz0644nhm4nLbtowuv_MLHlwGKjL3JKvlE4t2xnANiMtjtYqm9tGtHnzsQOo08eNgkxjeVhfmzzkobm7K3mpxDeIqhQ&usqp=CAc",
     },
     {
       name: "Konzervnyitó",
       description: "Egy eszköz, amelyet konzervek nyitásához használnak.",
       rentable: true,
       quantity: 16,
-      image: "can_opener.jpg",
+      image:
+        "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQQ18UFkiSkHH6v3LTGpPkSw43sQNoTB2ZY2hK_A0NOZnnoMr-Ob9xT24Mza0W_6qhmqLBRXdJVwaTZxT0hPIplVvfr5TWg1JWxjXoov2z4pKpUz7X5GuAknhnBK4OblC6QPOFS6iY&usqp=CAc",
     },
     {
       name: "Merőkanál",
@@ -110,7 +125,8 @@ async function main() {
         "Egy nagy kanál, amelyet leves vagy pörkölt tálalásához használnak.",
       rentable: true,
       quantity: 9,
-      image: "ladle.jpg",
+      image:
+        "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcSHXODkJooWTK6JYjRBrDd4Dp2SI2Uwkq1AAST4r4KMiMlJf8Ii2_wt1JS07wuO3Mga2QiL7uM6k57bilAHLg5oWxk_OtP3Tguvy1phKt6AmGQcTmJZO6lxOhkFbH0rM6kgyGpKiw&usqp=CAc",
     },
     {
       name: "Konyhai olló",
@@ -118,7 +134,8 @@ async function main() {
         "Olló, amelyet ételek és egyéb konyhai feladatok vágásához használnak.",
       rentable: true,
       quantity: 13,
-      image: "kitchen_shears.jpg",
+      image:
+        "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcQGe9XsxE1ytXcFmmJVf5L-vv93vPFWF_R9UAMBzk1fOeweRrHCXgCHKOAjVbfdVAJys2aXnSh-xFHRp1-xKHFjWnxGn4GmUjoryKgO9USVzU_lUgj2rboDM_aEooa9kjvabhTnCvQbPK4&usqp=CAc",
     },
   ];
 
