@@ -5,6 +5,7 @@ import { type Metadata } from "next";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { ThemeProvider } from "~/components/theme-provider";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Navbar from "~/components/common/navbar";
 
 export const metadata: Metadata = {
@@ -18,7 +19,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
-      <body>
+      <body className="flex min-h-screen flex-col">
         <TRPCReactProvider>
           <ThemeProvider
             attribute="class"
@@ -28,6 +29,8 @@ export default function RootLayout({
           >
             <Navbar />
             {children}
+
+            <ReactQueryDevtools initialIsOpen={false} />
           </ThemeProvider>
         </TRPCReactProvider>
       </body>
