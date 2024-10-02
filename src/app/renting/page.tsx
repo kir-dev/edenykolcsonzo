@@ -5,7 +5,7 @@ import { api, HydrateClient } from "~/trpc/server";
 export default async function RentingPage() {
   const session = await getServerAuthSession();
 
-  void api.tools.getAll.prefetch();
+  void api.tools.get.prefetch();
 
   if (!session || !session.user) {
     return null;

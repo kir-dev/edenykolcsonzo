@@ -4,7 +4,7 @@ import { api } from "~/trpc/react";
 import ToolItem from "./tool-item";
 
 export default function ToolsOverview() {
-  const { data: tools, error, isLoading } = api.tools.getAll.useQuery();
+  const { data: tools, error, isLoading } = api.tools.get.useQuery();
 
   return (
     <div className="">
