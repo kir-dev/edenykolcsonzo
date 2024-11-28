@@ -5,10 +5,11 @@ import {
   type NextAuthOptions,
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
-import DiscordProvider from "next-auth/providers/discord";
+import AuthSCHProvider, { type AuthSCHProfile } from "next-auth-authsch-provider";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
+import { type Role } from "@prisma/client";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -24,11 +25,10 @@ declare module "next-auth" {
       // role: UserRole;
     } & DefaultSession["user"];
   }
-
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    fullName: string;
+    role: Role;
+  }
 }
 
 /**
@@ -43,14 +43,48 @@ export const authOptions: NextAuthOptions = {
       user: {
         ...session.user,
         id: user.id,
+        name: user.fullName,
+        role: user.role,
       },
     }),
   },
   adapter: PrismaAdapter(db) as Adapter,
+  session: {
+    strategy: "database",
+  },
   providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
+    AuthSCHProvider({
+      clientId: env.AUTHSCH_CLIENT_ID,
+      clientSecret: env.AUTHSCH_CLIENT_SECRET,
+      scope: "basic mail sn givenName displayName eduPersonEntitlement",
+      profile(profile: AuthSCHProfile)  {
+        const ekPekID = 40;
+        const role = profile.eduPersonEntitlement.find((group) => group.id === ekPekID && group.end === null) ? "EK_MEMBER" : "USER";
+
+        // Update the user's role in the database based on the group membership. 
+        // The internal_id doesn't have a unique constraint, so we can't use a normal update here.
+        // But we can't really have two users with the same internal_id, so this should be fine.
+        db.user.updateMany({
+          where: {
+           accounts: {
+              some: {
+                providerAccountId: profile.internal_id,
+              }
+           },
+          },
+          data: {
+            role: role,
+          },
+        }).catch(console.error);
+
+        // First time login, create a new user in the database. Handled by Auth.js.
+        return {
+          id: profile.internal_id,
+          fullName: profile.displayName,
+          email: profile.mail,
+          role: role,
+        };
+      },
     }),
     /**
      * ...add more providers here.
