@@ -20,24 +20,25 @@ export const toolsRouter = createTRPCRouter({
   }),
 
   getWithRentalInfo: publicProcedure
-    .input(z.number().optional())
+    .input(z.number())
     .query(async ({ ctx, input }) => {
-      if (input) {
-        return ctx.db.tool.findUnique({
-          where: {
-            id: input,
-          },
-          include: {
-            ToolRental: true,
-          },
-        });
-      }
-      return ctx.db.tool.findMany({
+      return ctx.db.tool.findUnique({
+        where: {
+          id: input,
+        },
         include: {
           ToolRental: true,
         },
       });
     }),
+
+  getAllWithRentalInfo: publicProcedure.query(async ({ ctx }) => {
+    return ctx.db.tool.findMany({
+      include: {
+        ToolRental: true,
+      },
+    });
+  }),
 
   create: protectedProcedure
     .input(

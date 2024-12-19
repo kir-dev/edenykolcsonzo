@@ -4,7 +4,7 @@ import ToolsOverview from "~/components/tools/tools-overview";
 import { api, HydrateClient } from "~/trpc/server";
 
 export default async function Home() {
-  void api.tools.get.prefetch();
+  void api.tools.getAll.prefetch();
 
   return (
     <HydrateClient>

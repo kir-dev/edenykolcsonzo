@@ -17,11 +17,11 @@ export default function ToolItem({ tool }: ToolItemProps) {
     <Card className="flex items-center justify-center p-2 md:flex md:flex-col">
       <CardHeader>
         <CardTitle className="mb-2">{tool.name}</CardTitle>
-        <CardDescription>
-          {tool.description && <p>{tool.description}</p>}
-          <p className="mt-4 text-black dark:text-white">
+        <CardDescription className="flex flex-col">
+          {tool.description && <span>{tool.description}</span>}
+          <span className="mt-4 text-black dark:text-white">
             Darabszám: {tool.quantity}
-          </p>
+          </span>
         </CardDescription>
       </CardHeader>
       <CardContent className="flex lg:flex-col">
