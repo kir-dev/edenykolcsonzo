@@ -7,18 +7,17 @@ import {
 } from "~/server/api/trpc";
 
 export const toolsRouter = createTRPCRouter({
-  get: publicProcedure
-    .input(z.number().optional())
-    .query(async ({ ctx, input }) => {
-      if (input) {
-        return ctx.db.tool.findUnique({
-          where: {
-            id: input,
-          },
-        });
-      }
-      return ctx.db.tool.findMany();
-    }),
+  get: publicProcedure.input(z.number()).query(async ({ ctx, input }) => {
+    return ctx.db.tool.findUnique({
+      where: {
+        id: input,
+      },
+    });
+  }),
+
+  getAll: publicProcedure.query(async ({ ctx }) => {
+    return ctx.db.tool.findMany();
+  }),
 
   getWithRentalInfo: publicProcedure
     .input(z.number().optional())
