@@ -5,6 +5,7 @@ import {
   type NextAuthOptions,
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
+
 import AuthSCHProvider, {
   type AuthSCHProfile,
 } from "next-auth-authsch-provider";
@@ -66,7 +67,6 @@ export const authOptions: NextAuthOptions = {
         )
           ? "EK_MEMBER"
           : "USER";
-
         // Update the user's role in the database based on the group membership.
         // The internal_id doesn't have a unique constraint, so we can't use a normal update here.
         // But we can't really have two users with the same internal_id, so this should be fine.
@@ -84,7 +84,6 @@ export const authOptions: NextAuthOptions = {
             },
           })
           .catch(console.error);
-
         // First time login, create a new user in the database. Handled by Auth.js.
         return {
           id: profile.internal_id,
