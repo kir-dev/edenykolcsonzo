@@ -27,17 +27,19 @@ export const toolsRouter = createTRPCRouter({
           id: input,
         },
         include: {
-          ToolRental: true,
+          rentals: true,
         },
       });
     }),
 
   getAllWithRentalInfo: publicProcedure.query(async ({ ctx }) => {
-    return ctx.db.tool.findMany({
+    const tools = await ctx.db.tool.findMany({
       include: {
-        ToolRental: true,
+        rentals: true,
       },
     });
+
+    return tools;
   }),
 
   create: protectedProcedure

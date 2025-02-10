@@ -25,9 +25,9 @@ export default function ToolsRentingOverview() {
       {isLoading && <p>Loading...</p>}
       {/* {error && <p>Error: {error.message}</p>} */}
       <div className="flex flex-col gap-4 md:grid md:grid-cols-2 xl:grid-cols-3">
-        {/* {tools?.map((tool) => (
+        {tools?.map((tool) => (
           <ToolItemWithRentalInfo key={tool.id} tool={tool} />
-        ))} */}
+        ))}
       </div>
     </div>
   );
