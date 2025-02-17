@@ -1,10 +1,12 @@
 import { redirect } from "next/navigation";
-import ToolsRentingOverview from "~/components/tools/tools-renting-overview";
 import { getServerAuthSession } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
+import { DataTable } from "./data-table";
+import { columns } from "./columns";
 
 export default async function RentingPage() {
-  void api.tools.getAllWithRentalInfo.prefetch();
+  const tools = await api.tools.getAllWithRentalInfo();
+  console.log(tools);
 
   const session = await getServerAuthSession();
 
@@ -15,7 +17,10 @@ export default async function RentingPage() {
   return (
     <HydrateClient>
       <main className="flex flex-1 flex-col items-center justify-center text-white">
-        <ToolsRentingOverview />
+        {/* <ToolsRentingOverview /> */}
+        <div className="container mx-auto px-8 py-10">
+          <DataTable columns={columns} data={tools} />
+        </div>
       </main>
     </HydrateClient>
   );

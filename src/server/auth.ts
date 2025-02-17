@@ -52,15 +52,13 @@ export const authOptions: NextAuthOptions = {
     }),
   },
   adapter: PrismaAdapter(db) as Adapter,
-  session: {
-    strategy: "database",
-  },
+  session: { strategy: "database" },
   providers: [
     AuthSCHProvider({
       clientId: env.AUTHSCH_CLIENT_ID,
       clientSecret: env.AUTHSCH_CLIENT_SECRET,
       scope: "basic mail sn givenName displayName eduPersonEntitlement",
-      profile(profile: AuthSCHProfile) {
+      async profile(profile: AuthSCHProfile) {
         const ekPekID = 40;
         const role = profile.eduPersonEntitlement.find(
           (group) => group.id === ekPekID && group.end === null,
@@ -70,18 +68,12 @@ export const authOptions: NextAuthOptions = {
         // Update the user's role in the database based on the group membership.
         // The internal_id doesn't have a unique constraint, so we can't use a normal update here.
         // But we can't really have two users with the same internal_id, so this should be fine.
-        db.user
+        await db.user
           .updateMany({
             where: {
-              accounts: {
-                some: {
-                  providerAccountId: profile.internal_id,
-                },
-              },
+              accounts: { some: { providerAccountId: profile.internal_id } },
             },
-            data: {
-              role: role,
-            },
+            data: { role: role },
           })
           .catch(console.error);
         // First time login, create a new user in the database. Handled by Auth.js.
