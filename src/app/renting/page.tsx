@@ -6,7 +6,6 @@ import { columns } from "./columns";
 
 export default async function RentingPage() {
   const tools = await api.tools.getAllWithRentalInfo();
-  console.log(tools);
 
   const session = await getServerAuthSession();
 
