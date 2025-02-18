@@ -16,7 +16,6 @@ export default async function RentingPage() {
   return (
     <HydrateClient>
       <main className="flex flex-1 flex-col items-center justify-center text-white">
-        {/* <ToolsRentingOverview /> */}
         <div className="container mx-auto px-8 py-10">
           <DataTable columns={columns} data={tools} />
         </div>

@@ -9,11 +9,10 @@ const navItems = [
 ];
 
 export default async function Navbar() {
-
   const session = await getServerAuthSession();
 
   return (
-    <nav className="flex items-center justify-between px-4 py-2">
+    <nav className="flex items-center justify-between px-4 py-4">
       <Link href="/">
         <h1>Edénykölcsönző</h1>
       </Link>
