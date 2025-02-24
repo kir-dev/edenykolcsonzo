@@ -1,4 +1,4 @@
-import { createTRPCRouter, circleMemberProcedure } from "~/server/api/trpc";
+import { circleMemberProcedure, createTRPCRouter } from "~/server/api/trpc";
 
 export const circleMemberRouter = createTRPCRouter({
   /**

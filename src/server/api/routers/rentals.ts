@@ -1,12 +1,21 @@
-import { createTRPCRouter, publicProcedure } from "../trpc";
 import { z } from "zod";
 
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+
 export const rentalsRouter = createTRPCRouter({
-  get: publicProcedure.query(async ({ ctx }) => {
-    return ctx.db.rental.findMany();
+  get: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.db.rental.findMany({
+      include: {
+        user: true,
+        ToolRental: {
+          include: { tool: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
   }),
 
-  create: publicProcedure
+  create: protectedProcedure
     .input(
       z.object({
         toolId: z.number(),
@@ -18,10 +27,6 @@ export const rentalsRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const userId = ctx.session?.user.id;
-      if (!userId) {
-        throw new Error("Unauthorized");
-      }
 
       const tool = await ctx.db.tool.findUnique({
         where: {
@@ -35,7 +40,7 @@ export const rentalsRouter = createTRPCRouter({
       return ctx.db.rental.create({
         data: {
           status: "REQUESTED",
-          userId: userId,
+          userId: ctx.session!.user.id,
           startDate: new Date(input.startDate),
           endDate: new Date(input.endDate),
           startDateMessage: input.startDateMessage,
@@ -47,6 +52,25 @@ export const rentalsRouter = createTRPCRouter({
             },
           },
         },
+      });
+    }),
+
+  updateStatus: protectedProcedure
+    .input(
+      z.object({
+        rentalId: z.number(),
+        // Only allow the statuses defined in your enum:
+        status: z.enum(["REQUESTED", "ACCEPTED", "EXPIRED", "BROUGHT_BACK"]),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Only EK_MEMBERs should be allowed
+      if (ctx.session?.user.role !== "EK_MEMBER") {
+        throw new Error("Unauthorized");
+      }
+      return ctx.db.rental.update({
+        where: { id: input.rentalId },
+        data: { status: input.status },
       });
     }),
 });

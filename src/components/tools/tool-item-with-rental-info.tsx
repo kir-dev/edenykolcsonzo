@@ -1,12 +1,14 @@
+import Image from "next/image";
+
+import type { ToolWithRentalInfo } from "~/types";
+
 import {
   Card,
+  CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
 } from "../ui/card";
-import Image from "next/image";
-import type { ToolWithRentalInfo } from "~/types";
 
 interface ToolItemWithRentalInfoProps {
   tool: ToolWithRentalInfo;

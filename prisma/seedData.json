@@ -105,5 +105,58 @@
       "quantity": 13,
       "image": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcQGe9XsxE1ytXcFmmJVf5L-vv93vPFWF_R9UAMBzk1fOeweRrHCXgCHKOAjVbfdVAJys2aXnSh-xFHRp1-xKHFjWnxGn4GmUjoryKgO9USVzU_lUgj2rboDM_aEooa9kjvabhTnCvQbPK4&usqp=CAc"
     }
+  ],
+  "users": [
+    {
+      "fullName": "John Doe",
+      "email": "john@example.com",
+      "role": "USER"
+    }
+  ],
+  "rentals": [
+    {
+      "userEmail": "john@example.com",
+      "status": "REQUESTED",
+      "startDateMessage": "2025-03-01T10:00:00.000Z",
+      "endDateMessage": "2025-03-05T18:00:00.000Z",
+      "startDate": "2025-03-01T10:00:00.000Z",
+      "endDate": "2025-03-05T18:00:00.000Z",
+      "toolRentals": [
+        { "toolName": "Spatula", "quantity": 2 },  { "toolName": "Habverő", "quantity": 4 }
+      ]
+    },
+    {
+      "userEmail": "john@example.com",
+      "status": "ACCEPTED",
+      "startDateMessage": "2025-03-10T09:00:00.000Z",
+      "endDateMessage": "2025-03-12T17:00:00.000Z",
+      "startDate": "2025-03-10T09:00:00.000Z",
+      "endDate": "2025-03-12T17:00:00.000Z",
+      "toolRentals": [
+        { "toolName": "Habverő", "quantity": 1 }
+      ]
+    },
+    {
+      "userEmail": "john@example.com",
+      "status": "EXPIRED",
+      "startDateMessage": "2025-02-20T08:00:00.000Z",
+      "endDateMessage": "2025-02-25T20:00:00.000Z",
+      "startDate": "2025-02-20T08:00:00.000Z",
+      "endDate": "2025-02-25T20:00:00.000Z",
+      "toolRentals": [
+        { "toolName": "Spatula", "quantity": 3 }
+      ]
+    },
+    {
+      "userEmail": "john@example.com",
+      "status": "BROUGHT_BACK",
+      "startDateMessage": "2025-01-15T07:00:00.000Z",
+      "endDateMessage": "2025-01-20T19:00:00.000Z",
+      "startDate": "2025-01-15T07:00:00.000Z",
+      "endDate": "2025-01-20T19:00:00.000Z",
+      "toolRentals": [
+        { "toolName": "Habverő", "quantity": 1, "broughtBackQuantity": 1 }
+      ]
+    }
   ]
 }

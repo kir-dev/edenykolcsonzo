@@ -1,8 +1,10 @@
 import { redirect } from "next/navigation";
+
 import { getServerAuthSession } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
-import { DataTable } from "./data-table";
+
 import { columns } from "./columns";
+import { DataTable } from "./data-table";
 
 export default async function RentingPage() {
   const tools = await api.tools.getAllWithRentalInfo();
