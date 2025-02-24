@@ -146,8 +146,9 @@ export const circleMemberProcedure = t.procedure
 
     // For testing purposes, we will allow all roles to access the circle member routes
     console.log(
-      "The role of the user trying to access a circle member only route: " +
-        role,
+      `The role of the user trying to access a circle member only route: ${
+        role
+      }`,
     );
 
     return next({

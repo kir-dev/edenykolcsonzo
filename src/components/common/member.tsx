@@ -1,5 +1,5 @@
-import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
 
 export interface MemberProps {
   name: string;

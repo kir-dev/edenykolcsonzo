@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
+
+import RentalRequestsClient from "~/components/dashboard/RentingRequestsClient";
 import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
-import RentalRequestsClient from "~/components/dashboard/RentingRequestsClient";
 
 const RentalRequestsPage = async () => {
- void api.rentals.get.prefetch();
+  void api.rentals.get.prefetch();
   const session = await getServerAuthSession();
 
   if (!session || !session.user) {

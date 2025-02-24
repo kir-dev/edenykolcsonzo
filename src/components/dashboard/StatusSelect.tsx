@@ -1,5 +1,6 @@
 "use client";
 
+import { type RentalStatus } from "@prisma/client";
 import {
   Select,
   SelectContent,
@@ -7,7 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@radix-ui/react-select";
-import { type RentalStatus } from "@prisma/client";
 
 interface StatusSelectProps {
   defaultValue: RentalStatus;

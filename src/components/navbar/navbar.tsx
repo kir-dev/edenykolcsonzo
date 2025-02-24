@@ -1,7 +1,9 @@
 import Link from "next/link";
+
+import { getServerAuthSession } from "~/server/auth";
+
 import NavItem from "./nav-item";
 import { ThemeToggleButton } from "./theme-toggle-button";
-import { getServerAuthSession } from "~/server/auth";
 
 const navItems = [
   { href: "/renting", title: "Bérlés" },
@@ -23,7 +25,7 @@ export default async function Navbar() {
           </li>
         )}
         {session && session.user && session.user.role === "EK_MEMBER" && (
-          <NavItem href="/dashboard" title={"Kérés Kezelő"} />
+          <NavItem href="/dashboard" title="Kérés Kezelő" />
         )}
         {navItems.map((item) => (
           <li key={item.href}>

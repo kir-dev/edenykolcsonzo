@@ -1,6 +1,7 @@
 "use client";
 
 import { api } from "~/trpc/react";
+
 import ToolItemWithRentalInfo from "./tool-item-with-rental-info";
 
 export default function ToolsRentingOverview() {

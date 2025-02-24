@@ -1,6 +1,8 @@
 "use client";
 
 import { type RentalStatus } from "@prisma/client";
+import React from "react";
+
 import {
   Select,
   SelectContent,
@@ -8,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import React from "react";
+import { statusTitle } from "~/lib/utils";
 import { type RentalWithUserAndTools } from "~/types";
 
 function RentingSection(props: {
@@ -18,12 +20,12 @@ function RentingSection(props: {
 }) {
   const { status, rentals, handleStatusChange } = props;
   return (
-    <section className="mb-2 flex flex-col items-center">
-      <h2>{status}</h2>
+    <section className="mb-2 flex flex-col items-center text-red-600">
+      <h2>{statusTitle(status as RentalStatus)}</h2>
       {rentals && rentals.length > 0 ? (
         rentals.map((rental) => (
           <div key={rental.id}>
-            <p>
+            <p className="text-red-500">
               <strong>User:</strong> {rental.user.fullName ?? rental.user.email}{" "}
               <span>({new Date(rental.createdAt).toLocaleString()})</span>
             </p>

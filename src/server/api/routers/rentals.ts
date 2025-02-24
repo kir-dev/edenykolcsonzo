@@ -1,5 +1,6 @@
-import { createTRPCRouter, publicProcedure } from "../trpc";
 import { z } from "zod";
+
+import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const rentalsRouter = createTRPCRouter({
   get: publicProcedure.query(async ({ ctx }) => {
@@ -76,5 +77,4 @@ export const rentalsRouter = createTRPCRouter({
         data: { status: input.status },
       });
     }),
-    
 });
