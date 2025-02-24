@@ -131,3 +131,29 @@ export const protectedProcedure = t.procedure
       },
     });
   });
+
+export const circleMemberProcedure = t.procedure
+  .use(timingMiddleware)
+  .use(({ ctx, next }) => {
+    if (!ctx.session || !ctx.session.user) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+
+    const role = ctx.session.user.role;
+    // if (role !== "EK_MEMBER") {
+    //   throw new TRPCError({ code: "FORBIDDEN" });
+    // }
+
+    // For testing purposes, we will allow all roles to access the circle member routes
+    console.log(
+      "The role of the user trying to access a circle member only route: " +
+        role,
+    );
+
+    return next({
+      ctx: {
+        // infers the `session` as non-nullable
+        session: { ...ctx.session, user: ctx.session.user },
+      },
+    });
+  });

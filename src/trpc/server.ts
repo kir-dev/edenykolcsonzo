@@ -13,11 +13,18 @@ import { createQueryClient } from "./query-client";
  * handling a tRPC call from a React Server Component.
  */
 const createContext = cache(async () => {
+  // Since the object returned from calling headers() cannot be modified,
+  // we need to create a new Headers object and copy the values from the original one.
   const heads = await headers();
-  heads.set("x-trpc-source", "rsc");
+  const newHeaders = new Headers();
+
+  heads.forEach((value, key) => {
+    newHeaders.append(key, value);
+  });
+  newHeaders.set("x-trpc-source", "rsc");
 
   return createTRPCContext({
-    headers: heads,
+    headers: newHeaders,
   });
 });
 

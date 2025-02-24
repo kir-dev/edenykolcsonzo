@@ -4,7 +4,7 @@ import ToolsOverview from "~/components/tools/tools-overview";
 import { api, HydrateClient } from "~/trpc/server";
 
 export default async function Home() {
-  void api.tools.get.prefetch();
+  void api.tools.getAll.prefetch();
 
   return (
     <HydrateClient>
@@ -13,7 +13,7 @@ export default async function Home() {
           Konyhai eszközök
         </h2>
         <ToolsOverview />
-        <h2 className="mb-4 mt-12 text-2xl font-bold text-black dark:text-white">
+        <h2 className="mt-12 mb-4 text-2xl font-bold text-black dark:text-white">
           Körtagok
         </h2>
         <Members />

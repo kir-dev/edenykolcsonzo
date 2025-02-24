@@ -1,18 +1,20 @@
-import type { Tool } from "@prisma/client";
 import {
   Card,
-  CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
+  CardDescription,
+  CardContent,
 } from "../ui/card";
 import Image from "next/image";
+import type { ToolWithRentalInfo } from "~/types";
 
-interface ToolItemProps {
-  tool: Tool;
+interface ToolItemWithRentalInfoProps {
+  tool: ToolWithRentalInfo;
 }
 
-export default function ToolItem({ tool }: ToolItemProps) {
+export default function ToolItemWithRentalInfo({
+  tool,
+}: ToolItemWithRentalInfoProps) {
   return (
     <Card className="flex items-center justify-center p-2 md:flex md:flex-col">
       <CardHeader>

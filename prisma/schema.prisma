@@ -45,7 +45,7 @@ model Tool {
     image       String?
     createdAt   DateTime     @default(now())
     updatedAt   DateTime     @updatedAt
-    ToolRental  ToolRental[]
+    rentals     ToolRental[]
 }
 
 model ToolRental {
