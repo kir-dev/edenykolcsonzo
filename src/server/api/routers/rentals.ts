@@ -1,9 +1,9 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const rentalsRouter = createTRPCRouter({
-  get: publicProcedure.query(async ({ ctx }) => {
+  get: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db.rental.findMany({
       include: {
         user: true,
@@ -15,7 +15,7 @@ export const rentalsRouter = createTRPCRouter({
     });
   }),
 
-  create: publicProcedure
+  create: protectedProcedure
     .input(
       z.object({
         toolId: z.number(),
@@ -27,10 +27,6 @@ export const rentalsRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const userId = ctx.session?.user.id;
-      if (!userId) {
-        throw new Error("Unauthorized");
-      }
 
       const tool = await ctx.db.tool.findUnique({
         where: {
@@ -44,7 +40,7 @@ export const rentalsRouter = createTRPCRouter({
       return ctx.db.rental.create({
         data: {
           status: "REQUESTED",
-          userId: userId,
+          userId: ctx.session!.user.id,
           startDate: new Date(input.startDate),
           endDate: new Date(input.endDate),
           startDateMessage: input.startDateMessage,
@@ -59,7 +55,7 @@ export const rentalsRouter = createTRPCRouter({
       });
     }),
 
-  updateStatus: publicProcedure
+  updateStatus: protectedProcedure
     .input(
       z.object({
         rentalId: z.number(),
