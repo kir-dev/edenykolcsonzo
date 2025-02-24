@@ -17,15 +17,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
+import { Textarea } from "~/components/ui/textarea";
 import { Button } from "~/components/ui/button";
 import { Calendar } from "~/components/ui/calendar";
 
-import { Input } from "~/components/ui/input";
 import { toast } from "sonner";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "~/lib/utils";
 import { format } from "date-fns";
 import { Checkbox } from "../ui/checkbox";
+import { Input } from "../ui/input";
 
 const now = new Date();
 
@@ -34,8 +35,10 @@ const formSchema = z
     startDate: z
       .date()
       .min(now, "The start date should not be before the current date"),
+    startTime: z.string(),
     startDateComment: z.string().optional(),
     endDate: z.date(),
+    endTime: z.string(),
     endDateComment: z.string().optional(),
     rentAsACircle: z.boolean(),
   })
@@ -116,12 +119,26 @@ export default function StartRentalForm() {
 
         <FormField
           control={formState.control}
+          name="startTime"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Átvétel ideje</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={formState.control}
           name="startDateComment"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Megjegyzés a kezdő dátumhoz</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Textarea {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -169,12 +186,26 @@ export default function StartRentalForm() {
 
         <FormField
           control={formState.control}
+          name="endTime"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Leadás ideje</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={formState.control}
           name="endDateComment"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Megjegyzés a befejezési időponthoz</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Textarea className="resize-none" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
