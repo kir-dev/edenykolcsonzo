@@ -1,42 +1,79 @@
-/** @type {import("eslint").Linter.Config} */
-const config = {
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "project": true
+module.exports = {
+  parser: '@typescript-eslint/parser',
+  plugins: ['@typescript-eslint/eslint-plugin', 'prettier', 'simple-import-sort', 'react'],
+  extends: ['plugin:@typescript-eslint/recommended', 'plugin:react/recommended', 'eslint:recommended'],
+  root: true,
+  env: {
+    node: true,
+    jest: true,
+    browser: true,
   },
-  "plugins": [
-    "@typescript-eslint"
-  ],
-  "extends": [
-    "next/core-web-vitals",
-    "plugin:@typescript-eslint/recommended-type-checked",
-    "plugin:@typescript-eslint/stylistic-type-checked"
-  ],
-  "rules": {
-    "@typescript-eslint/array-type": "off",
-    "@typescript-eslint/consistent-type-definitions": "off",
-    "@typescript-eslint/consistent-type-imports": [
-      "warn",
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
+  ignorePatterns: ['.eslintrc.js', '.prettierrc.js', 'dist', 'vite.config.ts'],
+  rules: {
+    '@typescript-eslint/interface-name-prefix': 'off',
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    'prettier/prettier': 'error',
+    'simple-import-sort/imports': 'error',
+    'simple-import-sort/exports': 'error',
+    camelcase: [
+      'error',
       {
-        "prefer": "type-imports",
-        "fixStyle": "inline-type-imports"
-      }
+        properties: 'never',
+      },
     ],
-    "@typescript-eslint/no-unused-vars": [
-      "warn",
+    eqeqeq: 'error',
+    'max-depth': 'error',
+    'max-lines': 'error',
+    'no-alert': 'error',
+    'no-array-constructor': 'error',
+    'no-console': [
+      'error',
       {
-        "argsIgnorePattern": "^_"
-      }
+        allow: ['warn', 'error'],
+      },
     ],
-    "@typescript-eslint/require-await": "off",
-    "@typescript-eslint/no-misused-promises": [
-      "error",
-      {
-        "checksVoidReturn": {
-          "attributes": false
-        }
-      }
-    ]
-  }
-}
-module.exports = config;
+    'no-eval': 'error',
+    'no-implicit-coercion': 'error',
+    'no-lonely-if': 'error',
+    'no-nested-ternary': 'error',
+    'no-negated-condition': 'error',
+    'no-unneeded-ternary': 'error',
+    'no-undef-init': 'error',
+    'no-useless-concat': 'error',
+    'no-void': 'error',
+    'no-var': 'error',
+    'prefer-const': 'error',
+    'prefer-promise-reject-errors': 'error',
+    'prefer-template': 'error',
+    yoda: 'error',
+    'react/react-in-jsx-scope': 'off',
+    'react/hook-use-state': 'error',
+    'react/jsx-boolean-value': 'error',
+    'react/jsx-curly-brace-presence': 'error',
+    'react/jsx-no-useless-fragment': 'error',
+    'react/jsx-pascal-case': 'error',
+    'react/no-access-state-in-setstate': 'error',
+    'react/no-array-index-key': 'error',
+    'react/no-children-prop': 'error',
+    'react/no-danger': 'error',
+    'react/no-invalid-html-attribute': 'error',
+    'react/no-object-type-as-default-prop': 'error',
+    'react/no-this-in-sfc': 'error',
+    'react/no-unstable-nested-components': 'error',
+    'react/prefer-stateless-function': 'error',
+    'react/self-closing-comp': 'error',
+    'react/style-prop-object': 'error',
+    'react/void-dom-elements-no-children': 'error',
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-empty-function': 'off',
+    '@typescript-eslint/no-extra-semi': 'off',
+    '@typescript-eslint/no-unused-vars': 'error',
+  },
+};

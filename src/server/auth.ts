@@ -1,18 +1,17 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import { type Role } from "@prisma/client";
 import {
-  getServerSession,
   type DefaultSession,
+  getServerSession,
   type NextAuthOptions,
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
-
 import AuthSCHProvider, {
   type AuthSCHProfile,
 } from "next-auth-authsch-provider";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
-import { type Role } from "@prisma/client";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -59,7 +58,7 @@ export const authOptions: NextAuthOptions = {
       clientSecret: env.AUTHSCH_CLIENT_SECRET,
       scope: "basic mail sn givenName displayName eduPersonEntitlement",
       async profile(profile: AuthSCHProfile) {
-        const ekPekID = 40;
+        const ekPekID = process.env.NODE_ENV == "production" ? 40 : 106;
         const role = profile.eduPersonEntitlement.find(
           (group) => group.id === ekPekID && group.end === null,
         )

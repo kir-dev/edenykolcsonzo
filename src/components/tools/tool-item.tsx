@@ -1,4 +1,6 @@
 import type { Tool } from "@prisma/client";
+import Image from "next/image";
+
 import {
   Card,
   CardContent,
@@ -6,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import Image from "next/image";
 
 interface ToolItemProps {
   tool: Tool;

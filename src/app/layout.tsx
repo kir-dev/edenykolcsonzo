@@ -1,13 +1,13 @@
 import "~/styles/globals.css";
 
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 
-import { TRPCReactProvider } from "~/trpc/react";
-import { ThemeProvider } from "~/components/theme-provider";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Navbar from "~/components/navbar/navbar";
 import { Toaster } from "sonner";
+import { ThemeProvider } from "~/components/theme-provider";
+import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata: Metadata = {
   title: "EdénykölcsönzőSch",
