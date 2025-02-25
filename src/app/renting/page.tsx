@@ -1,14 +1,9 @@
 import { redirect } from "next/navigation";
-
+import StartRentalForm from "~/components/rental/start-rental-form";
 import { getServerAuthSession } from "~/server/auth";
-import { api, HydrateClient } from "~/trpc/server";
-
-import { columns } from "./columns";
-import { DataTable } from "./data-table";
+import { HydrateClient } from "~/trpc/server";
 
 export default async function RentingPage() {
-  const tools = await api.tools.getAllWithRentalInfo();
-
   const session = await getServerAuthSession();
 
   if (!session || !session.user) {
@@ -17,9 +12,10 @@ export default async function RentingPage() {
 
   return (
     <HydrateClient>
-      <main className="flex flex-1 flex-col items-center justify-center text-white">
-        <div className="container mx-auto px-8 py-10">
-          <DataTable columns={columns} data={tools} />
+      <main className="flex flex-1 flex-col items-center justify-center">
+        <h1 className="">Kölcsönzés</h1>
+        <div className="container flex justify-center px-8 py-10">
+          <StartRentalForm />
         </div>
       </main>
     </HydrateClient>

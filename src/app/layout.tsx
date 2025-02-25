@@ -5,6 +5,7 @@ import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 
 import Navbar from "~/components/navbar/navbar";
+import { Toaster } from "sonner";
 import { ThemeProvider } from "~/components/theme-provider";
 import { TRPCReactProvider } from "~/trpc/react";
 
@@ -34,6 +35,7 @@ export default function RootLayout({
             <Navbar />
             {children}
 
+            <Toaster />
             <ReactQueryDevtools initialIsOpen={false} />
           </ThemeProvider>
         </TRPCReactProvider>
