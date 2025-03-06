@@ -73,4 +73,21 @@ export const rentalsRouter = createTRPCRouter({
         data: { status: input.status },
       });
     }),
+
+  getUserRentals: protectedProcedure
+    .input(z.object({ userId: z.string() }).optional())
+    .query(async ({ ctx, input }) => {
+      let userId: string | undefined = input?.userId
+      if (!userId) {
+        if (!ctx.session?.user?.id) {
+          throw new Error("User could not be determined")
+        }
+        userId = ctx.session.user.id
+      }
+      return ctx.db.rental.findMany({
+        where: {
+          userId: userId
+        }
+      })
+    }),
 });
