@@ -64,15 +64,20 @@ export default function EditPageContent() {
           className="h-96 w-11/12 rounded-lg border border-gray-300 p-2"
         />
       )}
-      {pageContent ? (
-        <Button onClick={() => handlePageConentUpdate()} className="mt-4">
-          Mentés
+      <div className="flex gap-2">
+        <Button onClick={() => redirect("/about")} className="mt-4">
+          Vissza
         </Button>
-      ) : (
-        <Button onClick={() => handlePageConentCreate()} className="mt-4">
-          Létrehozás
-        </Button>
-      )}
+        {pageContent ? (
+          <Button onClick={() => handlePageConentUpdate()} className="mt-4">
+            Mentés
+          </Button>
+        ) : (
+          <Button onClick={() => handlePageConentCreate()} className="mt-4">
+            Létrehozás
+          </Button>
+        )}
+      </div>
     </div>
   );
 }
