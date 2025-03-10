@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const rentalsRouter = createTRPCRouter({
   get: protectedProcedure.query(async ({ ctx }) => {
@@ -27,7 +27,6 @@ export const rentalsRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-
       const tool = await ctx.db.tool.findUnique({
         where: {
           id: input.toolId,
@@ -77,17 +76,17 @@ export const rentalsRouter = createTRPCRouter({
   getUserRentals: protectedProcedure
     .input(z.object({ userId: z.string() }).optional())
     .query(async ({ ctx, input }) => {
-      let userId: string | undefined = input?.userId
+      let userId: string | undefined = input?.userId;
       if (!userId) {
         if (!ctx.session?.user?.id) {
-          throw new Error("User could not be determined")
+          throw new Error("User could not be determined");
         }
-        userId = ctx.session.user.id
+        userId = ctx.session.user.id;
       }
       return ctx.db.rental.findMany({
         where: {
-          userId: userId
-        }
-      })
+          userId: userId,
+        },
+      });
     }),
 });
