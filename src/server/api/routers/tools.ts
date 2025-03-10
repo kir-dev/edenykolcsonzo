@@ -32,6 +32,51 @@ export const toolsRouter = createTRPCRouter({
       });
     }),
 
+  upsertTool: protectedProcedure
+    .input(
+      z.object({
+        id: z.number().optional(),
+        name: z.string().min(1),
+        quantity: z.number().min(1),
+        description: z.string().optional(),
+        rentable: z.boolean().optional(),
+        image: z.string().nullable(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (input.id === undefined) {
+        return ctx.db.tool.create({
+          data: {
+            name: input.name,
+            quantity: input.quantity,
+            description: input.description ?? "",
+            rentable: input.rentable ?? true,
+            image: input.image,
+          },
+        });
+      }
+      return ctx.db.tool.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          name: input.name,
+          quantity: input.quantity,
+          description: input.description,
+          rentable: input.rentable,
+          image: input.image,
+        },
+      });
+    }),
+
+  deleteTool: protectedProcedure
+    .input(z.number())
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.tool.delete({
+        where: { id: input },
+      });
+    }),
+
   getAllWithRentalInfo: publicProcedure.query(async ({ ctx }) => {
     const tools = await ctx.db.tool.findMany({
       include: {
