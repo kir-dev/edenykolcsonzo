@@ -5,7 +5,7 @@ import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
 
 const RentalRequestsPage = async () => {
-  void api.rentals.get.prefetch();
+  api.rentals.get.prefetch();
   const session = await getServerAuthSession();
 
   if (!session || !session.user) {

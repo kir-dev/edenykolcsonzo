@@ -25,7 +25,7 @@ export default function RentalRequestsClient() {
       // Invalidate the rentals query manually
       const rentalsGetKey = getQueryKey(api.rentals.get, undefined, "query");
 
-      void queryClient.invalidateQueries({ queryKey: rentalsGetKey });
+      queryClient.invalidateQueries({ queryKey: rentalsGetKey });
     },
   });
 
