@@ -20,13 +20,15 @@ function RentingSection(props: {
 }) {
   const { status, rentals, handleStatusChange } = props;
   return (
-    <section className="mb-2 flex flex-col items-center w-2xl">
-      <h2 className="text-3xl self-start">{statusTitle(status as RentalStatus)}</h2>
+    <section className="mb-2 flex w-2xl flex-col items-center">
+      <h2 className="self-start text-3xl">
+        {statusTitle(status as RentalStatus)}
+      </h2>
       {rentals && rentals.length > 0 ? (
         rentals.map((rental) => (
           <div
             key={rental.id}
-            className="flex flex-row justify-between px-6 py-2 gap-5 w-2xl rounded-md my-1 bg-gray-200 dark:bg-gray-700"
+            className="my-1 flex w-2xl flex-row justify-between gap-5 rounded-md bg-gray-200 px-6 py-2 dark:bg-gray-700"
           >
             <div className="flex flex-col">
               <p>
@@ -61,7 +63,7 @@ function RentingSection(props: {
           </div>
         ))
       ) : (
-        <div className="flex flex-row justify-between px-6 py-2 rounded-md my-1 bg-gray-200 dark:bg-gray-700">
+        <div className="my-1 flex flex-row justify-between rounded-md bg-gray-200 px-6 py-2 dark:bg-gray-700">
           <p>Nincs Beérkezett kérés ebben a kategóriában</p>
         </div>
       )}

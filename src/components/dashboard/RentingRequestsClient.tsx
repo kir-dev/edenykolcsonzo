@@ -16,7 +16,7 @@ export default function RentalRequestsClient() {
   const initialGrouped: Record<RentalStatus, RentalWithUserAndTools[]> = {
     REQUESTED: [],
     ACCEPTED: [],
-    EXPIRED: [],
+    GIVEN_OUT: [],
     BROUGHT_BACK: [],
   };
 

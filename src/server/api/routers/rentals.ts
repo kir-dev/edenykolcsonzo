@@ -59,7 +59,7 @@ export const rentalsRouter = createTRPCRouter({
       z.object({
         rentalId: z.number(),
         // Only allow the statuses defined in your enum:
-        status: z.enum(["REQUESTED", "ACCEPTED", "EXPIRED", "BROUGHT_BACK"]),
+        status: z.enum(["REQUESTED", "ACCEPTED", "GIVEN_OUT", "BROUGHT_BACK"]),
       }),
     )
     .mutation(async ({ ctx, input }) => {
