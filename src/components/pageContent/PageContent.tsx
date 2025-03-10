@@ -2,11 +2,11 @@
 
 import { Role } from "@prisma/client";
 import { redirect } from "next/navigation";
-import ReactMarkdown from "react-markdown";
 
 import { api } from "~/trpc/react"; // client-side TRPC hook
 
 import { Button } from "../ui/button";
+import Markdown from "../common/markdown";
 
 interface PageContentProps {
   role: string | undefined;
@@ -26,7 +26,7 @@ export default function PageContent({ role }: PageContentProps) {
       <h1 className="mb-6 text-center text-4xl font-semibold">Rólunk</h1>
 
       <div className="prose text-center text-lg">
-        <ReactMarkdown>{pageContent?.content}</ReactMarkdown>
+        <Markdown content={pageContent?.content ?? ""} />
       </div>
 
       {isEKmember && (

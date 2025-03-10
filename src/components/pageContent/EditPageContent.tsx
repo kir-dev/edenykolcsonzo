@@ -4,11 +4,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
 import { redirect } from "next/navigation";
 import { useState } from "react";
-import ReactMarkdown from "react-markdown";
 
 import { api } from "~/trpc/react"; // client-side TRPC hook
 
 import { Button } from "../ui/button";
+import Markdown from "../common/markdown";
 
 export default function EditPageContent() {
   const queryClient = useQueryClient();
@@ -56,7 +56,7 @@ export default function EditPageContent() {
         {showPreview ? "Szerkesztés" : "Előnézet"}
       </Button>
       {showPreview ? (
-        <ReactMarkdown>{newContent}</ReactMarkdown>
+        <Markdown content={newContent} />
       ) : (
         <textarea
           value={newContent}
