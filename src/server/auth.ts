@@ -58,7 +58,7 @@ export const authOptions: NextAuthOptions = {
       clientSecret: env.AUTHSCH_CLIENT_SECRET,
       scope: "basic mail sn givenName displayName eduPersonEntitlement",
       async profile(profile: AuthSCHProfile) {
-        const ekPekID = process.env.NODE_ENV == "production" ? 40 : 106;
+        const ekPekID = process.env.NODE_ENV === "production" ? 40 : 106;
         const role = profile.eduPersonEntitlement.find(
           (group) => group.id === ekPekID && group.end === null,
         )
