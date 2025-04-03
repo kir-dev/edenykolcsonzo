@@ -12,7 +12,7 @@ export function statusTitle(status: RentalStatus) {
       return "Beérkezett";
     case "ACCEPTED":
       return "Elfogadott";
-    case "EXPIRED":
+    case "GIVEN_OUT":
       return "Kiadott";
     case "BROUGHT_BACK":
       return "Archív";

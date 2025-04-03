@@ -1,15 +1,21 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+
+import { Button } from "~/components/ui/button";
+import { Calendar } from "~/components/ui/calendar";
 import {
   Form,
+  FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormDescription,
-  FormControl,
   FormMessage,
 } from "~/components/ui/form";
 import {
@@ -18,13 +24,8 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import { Textarea } from "~/components/ui/textarea";
-import { Button } from "~/components/ui/button";
-import { Calendar } from "~/components/ui/calendar";
-
-import { toast } from "sonner";
-import { CalendarIcon } from "lucide-react";
 import { cn } from "~/lib/utils";
-import { format } from "date-fns";
+
 import { Checkbox } from "../ui/checkbox";
 import { Input } from "../ui/input";
 
@@ -95,7 +96,7 @@ export default function StartRentalForm() {
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
-                          variant={"outline"}
+                          variant="outline"
                           className={cn(
                             "w-[240px] pl-3 text-left font-normal",
                             !field.value && "text-muted-foreground",
@@ -119,7 +120,7 @@ export default function StartRentalForm() {
                       />
                     </PopoverContent>
                   </Popover>
-                  <FormDescription></FormDescription>
+                  <FormDescription />
                   <FormMessage />
                 </FormItem>
               )}
@@ -164,7 +165,7 @@ export default function StartRentalForm() {
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
-                          variant={"outline"}
+                          variant="outline"
                           className={cn(
                             "w-[240px] pl-3 text-left font-normal",
                             !field.value && "text-muted-foreground",
@@ -187,7 +188,7 @@ export default function StartRentalForm() {
                       />
                     </PopoverContent>
                   </Popover>
-                  <FormDescription></FormDescription>
+                  <FormDescription />
                   <FormMessage />
                 </FormItem>
               )}
