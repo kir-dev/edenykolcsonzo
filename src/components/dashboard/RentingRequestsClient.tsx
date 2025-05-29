@@ -16,7 +16,7 @@ export default function RentalRequestsClient() {
   const initialGrouped: Record<RentalStatus, RentalWithUserAndTools[]> = {
     REQUESTED: [],
     ACCEPTED: [],
-    EXPIRED: [],
+    GIVEN_OUT: [],
     BROUGHT_BACK: [],
   };
 
@@ -28,6 +28,36 @@ export default function RentalRequestsClient() {
       queryClient.invalidateQueries({ queryKey: rentalsGetKey });
     },
   });
+
+  const removeRentalMutation = api.rentals.remove.useMutation({
+    onSuccess: () => {
+      // Invalidate the rentals query manually
+      const rentalsGetKey = getQueryKey(api.rentals.get, undefined, "query");
+
+      queryClient.invalidateQueries({ queryKey: rentalsGetKey });
+    },
+  });
+
+  const reduceQuantityMutation = api.rentals.changeQuantity.useMutation({
+    onSuccess: () => {
+      // Invalidate the rentals query manually
+      const rentalsGetKey = getQueryKey(api.rentals.get, undefined, "query");
+
+      queryClient.invalidateQueries({ queryKey: rentalsGetKey });
+    },
+  });
+
+  const handleRemoveRental = (rentalId: number) => {
+    removeRentalMutation.mutate(rentalId);
+  };
+
+  const handleReduceQuantity = (
+    rentalId: number,
+    toolId: number,
+    quantity: number,
+  ) => {
+    reduceQuantityMutation.mutate({ rentalId, toolId, quantity });
+  };
 
   const handleStatusChange = (rentalId: number, newStatus: RentalStatus) => {
     updateStatusMutation.mutate({ rentalId, status: newStatus });
@@ -51,6 +81,8 @@ export default function RentalRequestsClient() {
           status={status}
           rentals={rentals}
           handleStatusChange={handleStatusChange}
+          handleRemoveRental={handleRemoveRental}
+          handleReduceQuantity={handleReduceQuantity}
         />
       ))}
     </div>

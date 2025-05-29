@@ -138,7 +138,7 @@
     },
     {
       "userEmail": "john@example.com",
-      "status": "EXPIRED",
+      "status": "GIVEN_OUT",
       "startDateMessage": "2025-02-20T08:00:00.000Z",
       "endDateMessage": "2025-02-25T20:00:00.000Z",
       "startDate": "2025-02-20T08:00:00.000Z",
