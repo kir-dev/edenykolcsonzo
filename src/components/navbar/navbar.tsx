@@ -19,9 +19,13 @@ export default async function Navbar() {
         <h1>Edénykölcsönző</h1>
       </Link>
       <ul className="flex gap-2">
-        {session && session.user && (
+        {session && session.user ? (
           <li>
             <NavItem href="/profile" title={session.user.name ?? "Profil"} />
+          </li>
+        ) : (
+          <li>
+            <NavItem href="/login" title="Bejelentkezés" />
           </li>
         )}
         {session && session.user && session.user.role === "EK_MEMBER" && (
