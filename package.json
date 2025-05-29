@@ -28,7 +28,7 @@
     "@radix-ui/react-select": "^2.2.5",
     "@radix-ui/react-slot": "^1.2.3",
     "@shadcn/ui": "^0.0.4",
-    "@t3-oss/env-nextjs": "^0.12.0",
+    "@t3-oss/env-nextjs": "^0.13.6",
     "@tanstack/react-query": "^5.79.0",
     "@tanstack/react-query-devtools": "^5.79.0",
     "@tanstack/react-table": "^8.21.3",
@@ -41,7 +41,7 @@
     "eslint-plugin-prettier": "^5.4.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "geist": "^1.4.2",
-    "lucide-react": "^0.479.0",
+    "lucide-react": "^0.511.0",
     "next": "^15.3.2",
     "next-auth": "^4.24.11",
     "next-auth-authsch-provider": "^1.0.3",
@@ -63,13 +63,13 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.8",
     "@types/eslint": "^8.56.12",
-    "@types/node": "^20.17.52",
-    "@types/react": "19.0.8",
-    "@types/react-dom": "19.0.3",
+    "@types/node": "^22.15.24",
+    "@types/react": "19.1.6",
+    "@types/react-dom": "19.1.5",
     "@typescript-eslint/eslint-plugin": "^8.33.0",
     "@typescript-eslint/parser": "^8.33.0",
     "eslint": "^8.57.1",
-    "eslint-config-next": "15.1.7",
+    "eslint-config-next": "15.3.2",
     "postcss": "^8.5.4",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
@@ -82,9 +82,5 @@
   },
   "prisma": {
     "seed": "bun prisma/seed.ts"
-  },
-  "overrides": {
-    "@types/react": "19.0.8",
-    "@types/react-dom": "19.0.3"
   }
 }
