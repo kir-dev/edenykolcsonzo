@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+
 import StartRentalForm from "~/components/rental/start-rental-form";
 import { getServerAuthSession } from "~/server/auth";
 import { HydrateClient } from "~/trpc/server";
