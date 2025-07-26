@@ -25,9 +25,8 @@ import {
 } from "~/components/ui/popover";
 import { Textarea } from "~/components/ui/textarea";
 import { cn } from "~/lib/utils";
-
-import { Checkbox } from "../ui/checkbox";
 import { Input } from "../ui/input";
+import { RentingDetails } from "~/types/renting";
 
 const now = new Date();
 
@@ -45,14 +44,17 @@ const formSchema = z
       .string()
       .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid time format. Use HH:MM"),
     endDateComment: z.string().optional(),
-    rentAsACircle: z.boolean().default(false),
   })
   .refine((data) => data.endDate > data.startDate, {
     message: "The end date should be after the start date",
     path: ["endDate"],
   });
 
-export default function StartRentalForm() {
+export default function StartRentalForm({
+  onSubmit,
+}: {
+  onSubmit: (details: RentingDetails) => void;
+}) {
   const formState = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -62,26 +64,15 @@ export default function StartRentalForm() {
       endDate: new Date(now.getTime() + 1000 * 60 * 60 * 24),
       endTime: "20:00",
       endDateComment: "",
-      rentAsACircle: false,
     },
   });
-
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    console.log(data);
-
-    toast("You submitted the following values:", {
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
-  }
 
   return (
     <Form {...formState}>
       <form
-        onSubmit={formState.handleSubmit(onSubmit)}
+        onSubmit={formState.handleSubmit((data) =>
+          onSubmit(data as RentingDetails),
+        )}
         className="flex w-fit flex-col justify-center space-y-4 p-4"
       >
         <div className="mb-12 flex w-full justify-center space-x-20">
@@ -223,20 +214,6 @@ export default function StartRentalForm() {
             />
           </div>
         </div>
-
-        <FormField
-          control={formState.control}
-          name="rentAsACircle"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Kölcsönzés körként</FormLabel>
-              <FormControl>
-                <Checkbox checked={field.value} onChange={field.onChange} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
         <Button type="submit" className="mt-12">
           Rendelés megkezdése

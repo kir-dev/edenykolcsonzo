@@ -22,17 +22,23 @@ import {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  onToolSelection?: (toolId: number, amount: number) => void;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  onToolSelection,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const table = useReactTable({
     data,
-    columns,
+    columns: onToolSelection
+      ? columns.map((col) =>
+          col.id === "actions" ? { ...col, meta: { onToolSelection } } : col,
+        )
+      : columns,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
@@ -49,7 +55,10 @@ export function DataTable<TData, TValue>({
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead
+                    key={header.id}
+                    className="text-center text-black dark:text-white"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(

@@ -30,7 +30,7 @@ export default function StatusSelect({
         <SelectItem value="REQUESTED">Beérkezett</SelectItem>
         <SelectItem value="ACCEPTED">Elfogadott</SelectItem>
         <SelectItem value="EXPIRED">Kiadott</SelectItem>
-        <SelectItem value="BROUGHT_BACK">Archív</SelectItem>
+        <SelectItem value="BROUGHT_BACK">Visszahozott</SelectItem>
       </SelectContent>
     </Select>
   );

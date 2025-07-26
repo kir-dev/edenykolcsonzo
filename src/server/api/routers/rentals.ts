@@ -55,6 +55,67 @@ export const rentalsRouter = createTRPCRouter({
       });
     }),
 
+  createMultiple: protectedProcedure
+    .input(
+      z.object({
+        startDate: z.string(),
+        endDate: z.string(),
+        startDateMessage: z.string(),
+        endDateMessage: z.string(),
+        tools: z.array(
+          z.object({
+            toolId: z.number(),
+            quantity: z.number().min(1),
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Validate that all tools exist
+      const toolIds = input.tools.map((t) => t.toolId);
+      const tools = await ctx.db.tool.findMany({
+        where: {
+          id: { in: toolIds },
+        },
+      });
+
+      if (tools.length !== toolIds.length) {
+        throw new Error("One or more tools not found");
+      }
+
+      // Check if quantities are available
+      for (const toolRental of input.tools) {
+        const tool = tools.find((t) => t.id === toolRental.toolId);
+        if (!tool || tool.quantity < toolRental.quantity) {
+          throw new Error(
+            `Insufficient quantity for tool ${tool?.name || toolRental.toolId}`,
+          );
+        }
+      }
+
+      return ctx.db.rental.create({
+        data: {
+          status: "REQUESTED",
+          userId: ctx.session!.user.id,
+          startDate: new Date(input.startDate),
+          endDate: new Date(input.endDate),
+          startDateMessage: input.startDateMessage,
+          endDateMessage: input.endDateMessage,
+          ToolRental: {
+            create: input.tools.map((tool) => ({
+              toolId: tool.toolId,
+              quantity: tool.quantity,
+            })),
+          },
+        },
+        include: {
+          ToolRental: {
+            include: { tool: true },
+          },
+        },
+      });
+    }),
+
   updateStatus: protectedProcedure
     .input(
       z.object({

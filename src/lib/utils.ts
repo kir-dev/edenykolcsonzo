@@ -15,7 +15,7 @@ export function statusTitle(status: RentalStatus) {
     case "GIVEN_OUT":
       return "Kiadott";
     case "BROUGHT_BACK":
-      return "Archív";
+      return "Visszahozott";
   }
 }
 

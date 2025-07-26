@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { roleToTitle } from "~/lib/utils";
+import { roleToTitle, statusTitle } from "~/lib/utils";
 import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
 
@@ -19,7 +19,7 @@ export default async function ProfilePage() {
   const rentals = await api.rentals.getUserRentals();
 
   const expiredRentals = rentals.filter(
-    (rental) => rental.status === "EXPIRED" || rental.status === "BROUGHT_BACK",
+    (rental) => rental.status === "BROUGHT_BACK",
   );
   const activeRentals = rentals.filter(
     (rental) => rental.status === "ACCEPTED" || rental.status === "REQUESTED",
@@ -61,7 +61,7 @@ export default async function ProfilePage() {
         </h2>
         <Table>
           <TableHeader>
-            <TableRow className="flex justify-between">
+            <TableRow>
               <TableHead className="w-[100px] text-black dark:text-white">
                 Azonosító
               </TableHead>
@@ -71,8 +71,14 @@ export default async function ProfilePage() {
               <TableHead className="text-black dark:text-white">
                 Bérlés kezdete
               </TableHead>
-              <TableHead className="text-right text-black dark:text-white">
+              <TableHead className="text-black dark:text-white">
+                Megjegyzés
+              </TableHead>
+              <TableHead className="text-black dark:text-white">
                 Bérlés vége
+              </TableHead>
+              <TableHead className="text-black dark:text-white">
+                Megjegyzés
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -81,11 +87,11 @@ export default async function ProfilePage() {
               activeRentals.map((rental) => (
                 <TableRow key={rental.id}>
                   <TableCell>{rental.id}</TableCell>
-                  <TableCell>{rental.status}</TableCell>
+                  <TableCell>{statusTitle(rental.status)}</TableCell>
                   <TableCell>{rental.startDate.toDateString()}</TableCell>
-                  <TableCell className="text-right">
-                    {rental.endDate.toDateString()}
-                  </TableCell>
+                  <TableCell>{rental.startDateMessage}</TableCell>
+                  <TableCell>{rental.endDate.toDateString()}</TableCell>
+                  <TableCell>{rental.endDateMessage}</TableCell>
                 </TableRow>
               ))
             ) : (
@@ -105,7 +111,7 @@ export default async function ProfilePage() {
         </h2>
         <Table>
           <TableHeader>
-            <TableRow className="flex justify-between">
+            <TableRow>
               <TableHead className="w-[100px] text-black dark:text-white">
                 Azonosító
               </TableHead>
@@ -115,8 +121,14 @@ export default async function ProfilePage() {
               <TableHead className="text-black dark:text-white">
                 Bérlés kezdete
               </TableHead>
-              <TableHead className="text-right text-black dark:text-white">
+              <TableHead className="text-black dark:text-white">
+                Megjegyzés
+              </TableHead>
+              <TableHead className="text-black dark:text-white">
                 Bérlés vége
+              </TableHead>
+              <TableHead className="text-black dark:text-white">
+                Megjegyzés
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -125,11 +137,11 @@ export default async function ProfilePage() {
               expiredRentals.map((rental) => (
                 <TableRow key={rental.id}>
                   <TableCell>{rental.id}</TableCell>
-                  <TableCell>{rental.status}</TableCell>
+                  <TableCell>{statusTitle(rental.status)}</TableCell>
                   <TableCell>{rental.startDate.toDateString()}</TableCell>
-                  <TableCell className="text-right">
-                    {rental.endDate.toDateString()}
-                  </TableCell>
+                  <TableCell>{rental.startDateMessage}</TableCell>
+                  <TableCell>{rental.endDate.toDateString()}</TableCell>
+                  <TableCell>{rental.endDateMessage}</TableCell>
                 </TableRow>
               ))
             ) : (
