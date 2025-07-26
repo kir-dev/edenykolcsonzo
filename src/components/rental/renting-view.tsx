@@ -1,14 +1,16 @@
 "use client";
-import { RentingDetails } from "~/types/renting";
-import { DataTable } from "./data-table";
-import { columns } from "./columns";
-import { ToolWithRentalInfo } from "~/types";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import StartRentalForm from "./start-rental-form";
-import { Button } from "../ui/button";
-import { api } from "~/trpc/react";
+import { useState } from "react";
 import { toast } from "sonner";
+
+import { api } from "~/trpc/react";
+import { ToolWithRentalInfo } from "~/types";
+import { RentingDetails } from "~/types/renting";
+
+import { Button } from "../ui/button";
+import { columns } from "./columns";
+import { DataTable } from "./data-table";
+import StartRentalForm from "./start-rental-form";
 export default function RentingView({
   tools,
 }: {
@@ -93,23 +95,26 @@ export default function RentingView({
       tools: selectedTools,
     });
   };
+  if (createRentalMutation.isPending) {
+    return <div>Loading...</div>;
+  }
+  if (createRentalMutation.isError) {
+    return <div>Error: {createRentalMutation.error.message}</div>;
+  }
+  if (!rentingDetails) {
+    return <StartRentalForm onSubmit={setRentingDetails} />;
+  }
 
   return (
-    <>
-      {rentingDetails ? (
-        <div className="flex flex-col items-center gap-4">
-          <DataTable
-            columns={columns}
-            data={tools}
-            onToolSelection={handleToolSelection}
-          />
-          <Button onClick={handleRent} size="lg" className="w-fit">
-            Bérlés véglegesítése
-          </Button>
-        </div>
-      ) : (
-        <StartRentalForm onSubmit={setRentingDetails} />
-      )}
-    </>
+    <div className="flex flex-col items-center gap-4">
+      <DataTable
+        columns={columns}
+        data={tools}
+        onToolSelection={handleToolSelection}
+      />
+      <Button onClick={handleRent} size="lg" className="w-fit">
+        Bérlés véglegesítése
+      </Button>
+    </div>
   );
 }

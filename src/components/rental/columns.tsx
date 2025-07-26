@@ -46,22 +46,6 @@ export const columns: ColumnDef<ToolWithRentalInfo>[] = [
       return <div className="text-center">{tool.quantity}</div>;
     },
   },
-  // {
-  //   id: "details",
-  //   cell: ({ row }) => {
-  //     const tool = row.original;
-  //     return (
-  //       <Button
-  //         variant="ghost"
-  //         onClick={() => {
-  //           console.log(tool);
-  //         }}
-  //       >
-  //         Részletek
-  //       </Button>
-  //     );
-  //   },
-  // },
   {
     id: "actions",
     header: "Bérlés",

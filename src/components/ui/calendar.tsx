@@ -18,10 +18,10 @@ function Calendar({
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
       classNames={{
-        months: "flex flex-col sm:flex-row gap-2",
+        months: "flex flex-col gap-2 items-center",
         month: "flex flex-col gap-4",
         caption: "flex justify-center pt-1 relative items-center w-full",
-        caption_label: "text-sm font-medium",
+        caption_label: "text-sm font-medium text-center",
         nav: "flex items-center gap-1",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
