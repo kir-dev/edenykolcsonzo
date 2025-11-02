@@ -5,13 +5,15 @@ import { api } from "~/trpc/react";
 import ToolItem from "./tool-item";
 import EditItemModal from "../inventory/EditItemModal";
 import { useMemo, useState } from "react";
-import { Session, Tool } from "@prisma/client";
+import { Tool } from "@prisma/client";
 import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
+import { Input } from "../ui/input";
 
 export default function ToolsOverview({ session }: { session: any }) {
   const { data: tools, error, isLoading } = api.tools.getAll.useQuery();
   const [selectedTool, setSelectedTool] = useState<null | Tool>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const openEditModal = (tool: Tool) => {
     setSelectedTool(tool);
@@ -22,21 +24,31 @@ export default function ToolsOverview({ session }: { session: any }) {
     const available: Tool[] = [];
     const unavailable: Tool[] = [];
     tools?.forEach((tool) => {
-      if (tool.rentable) {
-        available.push(tool);
-      } else {
-        unavailable.push(tool);
+      if (tool.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+        if (tool.rentable) {
+          available.push(tool);
+        } else {
+          unavailable.push(tool);
+        }
       }
     });
     return [available, unavailable];
-  }, [tools]);
+  }, [tools, searchTerm]);
 
   return (
     <div className="p-4">
       {isLoading && <p>Loading...</p>}
       {error && <p>Error: {error.message}</p>}
-      {isAdmin && (
-        <div className="mb-4 flex items-center justify-end">
+
+      <div className="mb-4 flex items-center justify-between">
+        <Input
+          type="text"
+          placeholder="Keresés..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="mr-2 max-w-2xl border border-gray-300 bg-white text-black placeholder-gray-500 focus:border-blue-500 focus:ring-0 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500"
+        />
+        {isAdmin && (
           <Button
             onClick={() => setIsEditModalOpen(true)}
             className="flex items-center"
@@ -44,8 +56,8 @@ export default function ToolsOverview({ session }: { session: any }) {
             <Plus className="mr-2" />
             Edény hozzáadása
           </Button>
-        </div>
-      )}
+        )}
+      </div>
 
       <div className="flex flex-col gap-4 md:grid md:grid-cols-4">
         {availableTools.map((tool) => (
