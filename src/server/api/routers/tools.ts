@@ -16,7 +16,9 @@ export const toolsRouter = createTRPCRouter({
   }),
 
   getAll: publicProcedure.query(async ({ ctx }) => {
-    return ctx.db.tool.findMany();
+    return (await ctx.db.tool.findMany()).sort((a, b) =>
+      a.name.localeCompare(b.name),
+    );
   }),
 
   getWithRentalInfo: publicProcedure

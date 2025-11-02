@@ -126,7 +126,7 @@ function RentingSection(props: {
                       <SelectItem value="REQUESTED">Beérkezett</SelectItem>
                       <SelectItem value="ACCEPTED">Elfogadott</SelectItem>
                       <SelectItem value="GIVEN_OUT">Kiadott</SelectItem>
-                      <SelectItem value="BROUGHT_BACK">Archív</SelectItem>
+                      <SelectItem value="BROUGHT_BACK">Visszahozott</SelectItem>
                     </SelectContent>
                   </Select>
 

@@ -16,6 +16,10 @@ const config = {
         protocol: "https",
         hostname: "encrypted-tbn*.gstatic.com",
       },
+      {
+        protocol: "https",
+        hostname: "warp.sch.bme.hu",
+      },
     ],
   },
 };

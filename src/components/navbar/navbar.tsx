@@ -31,9 +31,6 @@ export default async function Navbar() {
         {session && session.user && session.user.role === "EK_MEMBER" && (
           <NavItem href="/dashboard" title="Kérés Kezelő" />
         )}
-        {session && session.user && session.user.role === "EK_MEMBER" && (
-          <NavItem href="/inventory" title="Edények" />
-        )}
         {navItems.map((item) => (
           <li key={item.href}>
             <NavItem href={item.href} title={item.title} />
