@@ -5,9 +5,9 @@ import { redirect } from "next/navigation";
 
 import { api } from "~/trpc/react"; // client-side TRPC hook
 
-import { Button } from "../ui/button";
 import Markdown from "../common/markdown";
 import Members from "../common/members";
+import { Button } from "../ui/button";
 
 interface PageContentProps {
   role: string | undefined;

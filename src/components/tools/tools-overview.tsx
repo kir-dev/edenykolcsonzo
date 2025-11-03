@@ -1,17 +1,23 @@
 "use client";
 
+import { Tool } from "@prisma/client";
+import { Plus } from "lucide-react";
+import { useMemo, useState } from "react";
+
 import { api } from "~/trpc/react";
 
-import ToolItem from "./tool-item";
 import EditItemModal from "../inventory/EditItemModal";
-import { useMemo, useState } from "react";
-import { Tool } from "@prisma/client";
 import { Button } from "../ui/button";
-import { Plus } from "lucide-react";
 import { Input } from "../ui/input";
+import ToolItem from "./tool-item";
 
 export default function ToolsOverview({ session }: { session: any }) {
-  const { data: tools, error, isLoading } = api.tools.getAll.useQuery();
+  const {
+    data: tools,
+    error,
+    isLoading,
+    refetch,
+  } = api.tools.getAll.useQuery();
   const [selectedTool, setSelectedTool] = useState<null | Tool>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -90,6 +96,7 @@ export default function ToolsOverview({ session }: { session: any }) {
         isOpen={isEditModalOpen}
         close={() => setIsEditModalOpen(false)}
         selectedTool={selectedTool}
+        refetch={refetch}
       />
     </div>
   );

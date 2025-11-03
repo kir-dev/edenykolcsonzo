@@ -1,6 +1,13 @@
 "use client";
 
+import { Tool } from "@prisma/client";
+import { Trash } from "lucide-react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+
 import { api } from "~/trpc/react";
+
+import { Button } from "../ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,29 +15,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-import { Trash } from "lucide-react";
 import { Input } from "../ui/input";
-import { useEffect } from "react";
-import { Tool } from "@prisma/client";
-import { useForm } from "react-hook-form";
-import { Button } from "../ui/button";
 
 export default function EditItemModal({
   selectedTool,
   isOpen,
   close,
+  refetch,
 }: {
   selectedTool: Tool | null;
   isOpen: boolean;
   close: () => void;
+  refetch: () => void;
 }) {
   const { register, handleSubmit, reset, setValue } = useForm<Tool>();
-  const {
-    data: tools,
-    refetch,
-    error,
-    isLoading,
-  } = api.tools.getAll.useQuery();
   useEffect(() => {
     if (selectedTool) {
       setValue("id", selectedTool.id);
@@ -45,20 +43,17 @@ export default function EditItemModal({
   }, [selectedTool, setValue]);
   const updateItemsMutation = api.tools.upsertTool.useMutation({
     onSuccess: () => {
-      console.log("success");
       refetch();
     },
   });
   const deleteToolMutation = api.tools.deleteTool.useMutation({
     onSuccess: () => {
-      console.log("Tool deleted");
       refetch(); // Refetch the tools list after deletion
       close();
     },
   });
 
   const onSubmitTool = (data: Tool) => {
-    console.log(data);
     data.quantity = Number(data.quantity);
     updateItemsMutation.mutate(data);
     close();

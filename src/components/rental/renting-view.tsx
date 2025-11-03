@@ -27,7 +27,8 @@ export default function RentingView({
   const handleToolSelection = (toolId: number, amount: number) => {
     if (amount === 0) {
       setSelectedToolsMap((prev) => {
-        const { [toolId]: _, ...rest } = prev;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [toolId]: _unused, ...rest } = prev;
         return rest;
       });
       return;
@@ -57,7 +58,7 @@ export default function RentingView({
     }
 
     const selectedTools = Object.entries(selectedToolsMap)
-      .filter(([_, quantity]) => quantity > 0)
+      .filter(([, quantity]) => quantity > 0)
       .map(([toolId, quantity]) => ({
         toolId: parseInt(toolId),
         quantity,

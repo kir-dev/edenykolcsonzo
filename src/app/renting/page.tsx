@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
+
+import RentingView from "~/components/rental/renting-view";
 import { getServerAuthSession } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
-import RentingView from "~/components/rental/renting-view";
 
 export default async function RentingPage() {
   const tools = await api.tools.getAllWithRentalInfo();

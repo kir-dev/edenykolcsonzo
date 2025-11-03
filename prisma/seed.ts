@@ -1,4 +1,4 @@
-import { PrismaClient, type Prisma } from "@prisma/client";
+import { type Prisma, PrismaClient } from "@prisma/client";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -39,19 +39,16 @@ async function main() {
   await prisma.user.deleteMany();
 
   // Seed tools
-  console.log("Seeding tools...");
   await prisma.tool.createMany({ data: seedData.tools });
 
   // Seed users
-  console.log("Seeding users...");
   for (const userData of seedData.users) {
     await prisma.user.create({
       data: userData,
     });
   }
 
-  // Seed rentals along with their tool rentals
-  console.log("Seeding rentals...");
+  // Seed rentals with nested tool rentals
   for (const rentalData of seedData.rentals) {
     // Find the user based on the email provided
     const user = await prisma.user.findUnique({
@@ -92,8 +89,6 @@ async function main() {
       },
     });
   }
-
-  console.log("Seeding completed successfully.");
 }
 
 main()

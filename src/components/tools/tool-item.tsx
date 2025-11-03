@@ -1,6 +1,8 @@
 import type { Tool } from "@prisma/client";
+import { Edit } from "lucide-react";
 import Image from "next/image";
 
+import { Button } from "../ui/button";
 import {
   Card,
   CardContent,
@@ -8,8 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { Button } from "../ui/button";
-import { Edit } from "lucide-react";
 
 interface ToolItemProps {
   tool: Tool;

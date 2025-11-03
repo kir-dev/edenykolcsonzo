@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 "use client";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";

@@ -96,7 +96,7 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
   const result = await next();
 
   const end = Date.now();
-  console.log(`[TRPC] ${path} took ${end - start}ms to execute`);
+  console.warn(`[TRPC] ${path} took ${end - start}ms to execute`);
 
   return result;
 });
@@ -145,7 +145,7 @@ export const circleMemberProcedure = t.procedure
     // }
 
     // For testing purposes, we will allow all roles to access the circle member routes
-    console.log(
+    console.error(
       `The role of the user trying to access a circle member only route: ${
         role
       }`,

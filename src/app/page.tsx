@@ -1,10 +1,9 @@
-import Members from "~/components/common/members";
 import ToolsOverview from "~/components/tools/tools-overview";
 import { getServerAuthSession } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
 
 export default async function Home() {
-  void api.tools.getAll.prefetch();
+  api.tools.getAll.prefetch();
   const session = await getServerAuthSession();
   return (
     <HydrateClient>

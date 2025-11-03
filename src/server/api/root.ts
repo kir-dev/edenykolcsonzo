@@ -1,9 +1,9 @@
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 
 import { circleMemberRouter } from "./routers/dashboard";
+import { pageContentRouter } from "./routers/pageContent";
 import { rentalsRouter } from "./routers/rentals";
 import { toolsRouter } from "./routers/tools";
-import { pageContentRouter } from "./routers/pageContent";
 
 /**
  * This is the primary router for your server.

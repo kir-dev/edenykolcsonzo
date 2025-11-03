@@ -7,8 +7,8 @@ import { useState } from "react";
 
 import { api } from "~/trpc/react"; // client-side TRPC hook
 
-import { Button } from "../ui/button";
 import Markdown from "../common/markdown";
+import { Button } from "../ui/button";
 
 export default function EditPageContent() {
   const queryClient = useQueryClient();
