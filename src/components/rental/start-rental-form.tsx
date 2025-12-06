@@ -75,8 +75,8 @@ export default function StartRentalForm({
         )}
         className="flex w-fit flex-col justify-center space-y-4 p-4"
       >
-        <div className="mb-12 flex w-full justify-center space-x-20">
-          <div className="flex flex-col space-y-6">
+        <div className="mb-12 flex w-full items-center justify-center not-md:flex-col md:space-x-20">
+          <div className="flex flex-col space-y-6 not-md:mb-6">
             <FormField
               control={formState.control}
               name="startDate"
