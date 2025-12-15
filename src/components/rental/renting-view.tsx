@@ -56,7 +56,7 @@ export default function RentingView() {
     error: toolsError,
   } = api.tools.getAvailableInPeriod.useQuery(
     { startDate: dateRange?.startDate ?? "", endDate: dateRange?.endDate ?? "" },
-    { enabled: !!dateRange },
+    { enabled: Boolean(dateRange) },
   );
 
   const handleToolSelection = (toolId: number, amount: number) => {
