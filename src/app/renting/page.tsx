@@ -2,11 +2,9 @@ import { redirect } from "next/navigation";
 
 import RentingView from "~/components/rental/renting-view";
 import { getServerAuthSession } from "~/server/auth";
-import { api, HydrateClient } from "~/trpc/server";
+import { HydrateClient } from "~/trpc/server";
 
 export default async function RentingPage() {
-  const tools = await api.tools.getAllWithRentalInfo();
-
   const session = await getServerAuthSession();
 
   if (!session || !session.user) {
@@ -18,7 +16,7 @@ export default async function RentingPage() {
       <main className="flex flex-1 flex-col items-center justify-center text-white">
         <h1 className="">Kölcsönzés</h1>
         <div className="container flex justify-center px-8 py-10">
-          <RentingView tools={tools} />
+          <RentingView />
         </div>
       </main>
     </HydrateClient>
