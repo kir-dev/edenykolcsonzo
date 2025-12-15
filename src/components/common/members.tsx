@@ -1,69 +1,37 @@
-import type { MemberProps } from "./member";
+"use client";
+
+import { api } from "~/trpc/react";
+
 import Member from "./member";
 
 export default function Members() {
+  const { data: members, isLoading, error } = api.users.getEKMembers.useQuery();
+
+  if (isLoading) {
+    return <div className="text-center">Tagok betöltése...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="text-center text-red-500">Hiba: {error.message}</div>
+    );
+  }
+
+  if (!members || members.length === 0) {
+    return <div className="text-center italic">Még nincsenek tagok.</div>;
+  }
+
   return (
     <div className="grid grid-flow-col grid-rows-4 gap-4 md:grid-rows-3 lg:grid-rows-2">
       {members.map((member) => (
-        <Member key={member.email} {...member} />
+        <Member
+          key={member.id}
+          name={member.fullName || member.nickname || "Ismeretlen"}
+          email={member.email || ""}
+          role="Tag"
+          avatar={member.profileImage || ""}
+        />
       ))}
     </div>
   );
 }
-
-const members: MemberProps[] = [
-  {
-    name: "John Doe",
-    email: "johndoe@gmail.com",
-    role: "Körvezető",
-    avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-  },
-  {
-    name: "Jane Smith",
-    email: "janesmith@gmail.com",
-    role: "Tag",
-    avatar: "https://randomuser.me/api/portraits/women/1.jpg",
-  },
-  {
-    name: "Alice Johnson",
-    email: "alicejohnson@gmail.com",
-    role: "Tag",
-    avatar: "https://randomuser.me/api/portraits/women/2.jpg",
-  },
-  {
-    name: "Bob Brown",
-    email: "bobbrown@gmail.com",
-    role: "Tag",
-    avatar: "https://randomuser.me/api/portraits/men/2.jpg",
-  },
-  {
-    name: "Charlie Davis",
-    email: "charliedavis@gmail.com",
-    role: "Tag",
-    avatar: "https://randomuser.me/api/portraits/men/3.jpg",
-  },
-  {
-    name: "Diana Evans",
-    email: "dianaevans@gmail.com",
-    role: "Tag",
-    avatar: "https://randomuser.me/api/portraits/women/3.jpg",
-  },
-  {
-    name: "Eve Foster",
-    email: "evefoster@gmail.com",
-    role: "Tag",
-    avatar: "https://randomuser.me/api/portraits/women/4.jpg",
-  },
-  {
-    name: "Frank Green",
-    email: "frankgreen@gmail.com",
-    role: "Tag",
-    avatar: "https://randomuser.me/api/portraits/men/4.jpg",
-  },
-  {
-    name: "Grace Harris",
-    email: "graceharris@gmail.com",
-    role: "Tag",
-    avatar: "https://randomuser.me/api/portraits/women/5.jpg",
-  },
-];
