@@ -71,7 +71,9 @@ export const columns: ColumnDef<ToolWithAvailability>[] = [
 
       const handleAmountChange = (newAmount: number) => {
         if (newAmount > tool.availableQuantity) {
-          toast.error(`Nincs ennyi ${tool.name}! ${tool.availableQuantity} darab elérhető!`);
+          toast.error(
+            `Nincs ennyi ${tool.name}! ${tool.availableQuantity} darab elérhető!`,
+          );
           return;
         }
         setAmount(newAmount);

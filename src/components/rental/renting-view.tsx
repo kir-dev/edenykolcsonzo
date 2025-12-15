@@ -55,7 +55,10 @@ export default function RentingView() {
     isError: isToolsError,
     error: toolsError,
   } = api.tools.getAvailableInPeriod.useQuery(
-    { startDate: dateRange?.startDate ?? "", endDate: dateRange?.endDate ?? "" },
+    {
+      startDate: dateRange?.startDate ?? "",
+      endDate: dateRange?.endDate ?? "",
+    },
     { enabled: Boolean(dateRange) },
   );
 
@@ -128,7 +131,11 @@ export default function RentingView() {
   }
 
   if (isToolsError) {
-    return <div className="text-center text-red-500">Hiba: {toolsError?.message}</div>;
+    return (
+      <div className="text-center text-red-500">
+        Hiba: {toolsError?.message}
+      </div>
+    );
   }
 
   if (!availableTools || availableTools.length === 0) {
