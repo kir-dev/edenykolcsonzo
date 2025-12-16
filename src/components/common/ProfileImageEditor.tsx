@@ -62,11 +62,23 @@ export default function ProfileImageEditor({
           <div className="flex w-full max-w-sm flex-col gap-2">
             <Input
               type="url"
-              placeholder="Kép URL (pl. https://i.imgur.com/xyz.jpg)"
+              placeholder="Kép URL (pl. https://warp.sch.bme.hu/...)"
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
               className="bg-white text-black dark:bg-gray-700 dark:text-white"
             />
+            <p className="text-muted-foreground text-sm">
+              💡 Tipp: Töltsd fel a képed a{" "}
+              <a
+                href="https://warp.sch.bme.hu/circles/9"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary underline hover:no-underline"
+              >
+                Warp-ra
+              </a>
+              , és másold be a kép linkjét!
+            </p>
             <div className="flex gap-2">
               <Button
                 onClick={handleSave}
