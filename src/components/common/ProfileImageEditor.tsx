@@ -25,6 +25,7 @@ export default function ProfileImageEditor({
 
   const utils = api.useUtils();
 
+  // Mutation for updating the user's profile image in the database
   const updateImageMutation = api.users.updateProfileImage.useMutation({
     onSuccess: () => {
       toast.success("Profilkép sikeresen frissítve!");
