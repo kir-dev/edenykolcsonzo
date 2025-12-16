@@ -107,15 +107,17 @@ export default function RentingView({
   }
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <DataTable
-        columns={columns}
-        data={tools}
-        onToolSelection={handleToolSelection}
-      />
-      <Button onClick={handleRent} size="lg" className="w-fit">
-        Bérlés véglegesítése
-      </Button>
+    <div className="rounded-3xl bg-card p-6 shadow-lg">
+      <div className="flex flex-col items-center gap-4">
+        <DataTable
+          columns={columns}
+          data={tools}
+          onToolSelection={handleToolSelection}
+        />
+        <Button onClick={handleRent} size="lg" className="w-fit">
+          Bérlés véglegesítése
+        </Button>
+      </div>
     </div>
   );
 }
