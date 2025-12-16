@@ -9,17 +9,27 @@ export interface MemberProps {
 }
 
 export default function Member({ name, role, avatar }: MemberProps) {
+  // Get initials for fallback
+  const initials = name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+
   return (
-    <Card className="flex w-fit p-6">
-      <CardHeader>
-        <CardTitle>
-          <Avatar className="h-20 w-20 lg:h-40 lg:w-40">
-            <AvatarImage src={avatar} alt={name} />
-            <AvatarFallback>{name}</AvatarFallback>
-          </Avatar>
-          <p className="mt-4">{name}</p>
+    <Card className="flex w-full flex-col items-center p-3 sm:p-6">
+      <Avatar className="h-16 w-16 sm:h-20 sm:w-20 lg:h-32 lg:w-32">
+        <AvatarImage src={avatar} alt={name} />
+        <AvatarFallback className="text-lg sm:text-xl lg:text-2xl">
+          {initials}
+        </AvatarFallback>
+      </Avatar>
+      <CardHeader className="p-0 pt-2 text-center sm:pt-4">
+        <CardTitle className="text-sm sm:text-base lg:text-lg">
+          {name}
         </CardTitle>
-        <CardDescription>{role}</CardDescription>
+        <CardDescription className="text-xs sm:text-sm">{role}</CardDescription>
       </CardHeader>
     </Card>
   );
