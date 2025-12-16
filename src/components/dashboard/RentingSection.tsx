@@ -77,8 +77,8 @@ function RentingSection(props: {
   };
 
   return (
-    <section className="mb-2 flex w-2xl flex-col items-center">
-      <h2 className="self-start text-3xl">
+    <section className="mb-4 flex w-full max-w-2xl flex-col">
+      <h2 className="mb-2 text-xl sm:text-3xl">
         {statusTitle(status as RentalStatus)}
       </h2>
       {rentals && rentals.length > 0 ? (
@@ -87,7 +87,7 @@ function RentingSection(props: {
           return (
             <div
               key={rental.id}
-              className="my-1 w-2xl rounded-md bg-gray-200 px-6 py-2 dark:bg-gray-700"
+              className="my-1 w-full rounded-md bg-gray-200 px-6 py-2 dark:bg-gray-700"
             >
               <div className="flex items-center justify-between">
                 <div className="flex flex-col">

@@ -73,8 +73,8 @@ export default function RentalRequestsClient() {
   }, initialGrouped);
 
   return (
-    <div className="flex flex-col items-center">
-      <h1 className="mb-4 text-4xl">Beérkezett Kérések</h1>
+    <div className="flex flex-col items-center px-4">
+      <h1 className="mb-4 text-2xl sm:text-4xl">Beérkezett Kérések</h1>
       {Object.entries(groupedRentals).map(([status, rentals]) => (
         <RentingSection
           key={status}
