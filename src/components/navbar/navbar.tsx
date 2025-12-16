@@ -21,7 +21,11 @@ export default async function Navbar() {
       <ul className="flex gap-2">
         {session && session.user ? (
           <li>
-            <NavItem href="/profile" title={session.user.name ?? "Profil"} colorVariant="sky" />
+            <NavItem
+              href="/profile"
+              title={session.user.name ?? "Profil"}
+              colorVariant="sky"
+            />
           </li>
         ) : (
           <li>
@@ -33,7 +37,11 @@ export default async function Navbar() {
         )}
         {navItems.map((item) => (
           <li key={item.href}>
-            <NavItem href={item.href} title={item.title} colorVariant={item.colorVariant} />
+            <NavItem
+              href={item.href}
+              title={item.title}
+              colorVariant={item.colorVariant}
+            />
           </li>
         ))}
         <ThemeToggleButton />

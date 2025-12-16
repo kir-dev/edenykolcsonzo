@@ -31,7 +31,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="m-25 flex-col items-center justify-center">
-      <div className="m-4 rounded-3xl bg-card p-3.5 shadow-lg">
+      <div className="bg-card m-4 rounded-3xl p-3.5 shadow-lg">
         <h2 className="flex flex-row items-center p-1.5">
           <UserRound />
           Profil
@@ -47,14 +47,14 @@ export default async function ProfilePage() {
         <div className="flex flex-col items-center">
           <Link
             href="/api/auth/signout"
-            className="flex flex-row gap-2 rounded-4xl bg-amber-500 text-white p-3 transition-all hover:bg-amber-600 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90"
+            className="dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90 flex flex-row gap-2 rounded-4xl bg-amber-500 p-3 text-white transition-all hover:bg-amber-600"
           >
             <LogOut />
             Kijelentkezés
           </Link>
         </div>
       </div>
-      <div className="m-4 rounded-3xl bg-card p-3.5 shadow-lg">
+      <div className="bg-card m-4 rounded-3xl p-3.5 shadow-lg">
         <h2 className="flex flex-row items-center p-1.5">
           <ClockArrowDown className="mr-1" />
           Aktív rendeléseim
@@ -104,7 +104,7 @@ export default async function ProfilePage() {
           </TableBody>
         </Table>
       </div>
-      <div className="m-4 rounded-3xl bg-card p-3.5 shadow-lg">
+      <div className="bg-card m-4 rounded-3xl p-3.5 shadow-lg">
         <h2 className="flex flex-row items-center p-1.5">
           <ListOrdered className="mr-0.5" />
           Archív rendeléseim

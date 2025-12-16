@@ -11,11 +11,16 @@ interface NavItemProps {
 
 const colorClasses = {
   sky: "bg-sky-500 text-white hover:bg-sky-600 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90",
-  yellow: "bg-amber-500 text-white hover:bg-amber-600 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90",
+  yellow:
+    "bg-amber-500 text-white hover:bg-amber-600 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90",
   default: "",
 };
 
-export default function NavItem({ href, title, colorVariant = "default" }: NavItemProps) {
+export default function NavItem({
+  href,
+  title,
+  colorVariant = "default",
+}: NavItemProps) {
   return (
     <Button asChild className={cn(colorClasses[colorVariant])}>
       <Link href={href}>{title}</Link>

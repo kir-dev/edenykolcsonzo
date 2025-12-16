@@ -52,7 +52,7 @@ export default function ToolsOverview({ session }: { session: any }) {
           placeholder="Keresés..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="mr-2 max-w-2xl border border-border bg-card"
+          className="border-border bg-card mr-2 max-w-2xl border"
         />
         {isAdmin && (
           <Button

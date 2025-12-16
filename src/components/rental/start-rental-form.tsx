@@ -68,7 +68,7 @@ export default function StartRentalForm({
   });
 
   return (
-    <div className="rounded-3xl bg-card p-6 shadow-lg">
+    <div className="bg-card rounded-3xl p-6 shadow-lg">
       <Form {...formState}>
         <form
           onSubmit={formState.handleSubmit((data) =>

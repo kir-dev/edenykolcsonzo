@@ -87,7 +87,7 @@ function RentingSection(props: {
           return (
             <div
               key={rental.id}
-              className="my-2 w-full rounded-xl bg-secondary px-6 py-3 shadow-sm"
+              className="bg-secondary my-2 w-full rounded-xl px-6 py-3 shadow-sm"
             >
               <div className="flex items-center justify-between">
                 <div className="flex flex-col">
@@ -105,7 +105,8 @@ function RentingSection(props: {
                     <strong>Eszközök:</strong>{" "}
                     {rental.ToolRental.map(
                       (toolRental, idx) =>
-                        `${toolRental.tool.name} (${toolRental.quantity}x)${idx === rental.ToolRental.length - 1 ? "" : ", "
+                        `${toolRental.tool.name} (${toolRental.quantity}x)${
+                          idx === rental.ToolRental.length - 1 ? "" : ", "
                         }`,
                     )}
                   </p>
@@ -193,15 +194,16 @@ function RentingSection(props: {
                 </div>
               </div>
               <div
-                className={`overflow-hidden transition-all duration-300 ${isExpanded ? "mt-2 max-h-96" : "max-h-0"
-                  }`}
+                className={`overflow-hidden transition-all duration-300 ${
+                  isExpanded ? "mt-2 max-h-96" : "max-h-0"
+                }`}
               >
                 {isExpanded && (
                   <div className="flex flex-col gap-2">
                     {rental.ToolRental.map((toolRental) => (
                       <div
                         key={`${toolRental.rentalId}-${toolRental.toolId}`}
-                        className="relative flex items-center gap-4 rounded-lg bg-muted px-4 py-2"
+                        className="bg-muted relative flex items-center gap-4 rounded-lg px-4 py-2"
                       >
                         <img
                           src={
@@ -282,7 +284,7 @@ function RentingSection(props: {
           );
         })
       ) : (
-        <div className="my-2 w-full rounded-xl bg-secondary px-6 py-3">
+        <div className="bg-secondary my-2 w-full rounded-xl px-6 py-3">
           <p>Nincs Beérkezett kérés ebben a kategóriában</p>
         </div>
       )}

@@ -107,7 +107,7 @@ export default function RentingView({
   }
 
   return (
-    <div className="rounded-3xl bg-card p-6 shadow-lg">
+    <div className="bg-card rounded-3xl p-6 shadow-lg">
       <div className="flex flex-col items-center gap-4">
         <DataTable
           columns={columns}

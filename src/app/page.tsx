@@ -8,9 +8,7 @@ export default async function Home() {
   return (
     <HydrateClient>
       <main className="flex flex-1 flex-col p-4">
-        <h2 className="mb-4 text-2xl font-bold">
-          Konyhai eszközök
-        </h2>
+        <h2 className="mb-4 text-2xl font-bold">Konyhai eszközök</h2>
         <ToolsOverview session={session} />
       </main>
     </HydrateClient>
