@@ -77,8 +77,8 @@ function RentingSection(props: {
   };
 
   return (
-    <section className="mb-2 flex w-2xl flex-col items-center">
-      <h2 className="self-start text-3xl">
+    <section className="mb-4 w-full">
+      <h2 className="mb-2 text-2xl font-semibold">
         {statusTitle(status as RentalStatus)}
       </h2>
       {rentals && rentals.length > 0 ? (
@@ -87,7 +87,7 @@ function RentingSection(props: {
           return (
             <div
               key={rental.id}
-              className="my-1 w-2xl rounded-md bg-gray-200 px-6 py-2 dark:bg-gray-700"
+              className="my-2 w-full rounded-xl bg-secondary px-6 py-3 shadow-sm"
             >
               <div className="flex items-center justify-between">
                 <div className="flex flex-col">
@@ -105,8 +105,7 @@ function RentingSection(props: {
                     <strong>Eszközök:</strong>{" "}
                     {rental.ToolRental.map(
                       (toolRental, idx) =>
-                        `${toolRental.tool.name} (${toolRental.quantity}x)${
-                          idx === rental.ToolRental.length - 1 ? "" : ", "
+                        `${toolRental.tool.name} (${toolRental.quantity}x)${idx === rental.ToolRental.length - 1 ? "" : ", "
                         }`,
                     )}
                   </p>
@@ -194,16 +193,15 @@ function RentingSection(props: {
                 </div>
               </div>
               <div
-                className={`overflow-hidden transition-all duration-300 ${
-                  isExpanded ? "mt-2 max-h-96" : "max-h-0"
-                }`}
+                className={`overflow-hidden transition-all duration-300 ${isExpanded ? "mt-2 max-h-96" : "max-h-0"
+                  }`}
               >
                 {isExpanded && (
                   <div className="flex flex-col gap-2">
                     {rental.ToolRental.map((toolRental) => (
                       <div
                         key={`${toolRental.rentalId}-${toolRental.toolId}`}
-                        className="relative flex items-center gap-4 rounded-md bg-gray-100 px-4 py-2 dark:bg-gray-600"
+                        className="relative flex items-center gap-4 rounded-lg bg-muted px-4 py-2"
                       >
                         <img
                           src={
@@ -284,7 +282,7 @@ function RentingSection(props: {
           );
         })
       ) : (
-        <div className="my-1 w-2xl rounded-md bg-gray-200 px-6 py-2 dark:bg-gray-700">
+        <div className="my-2 w-full rounded-xl bg-secondary px-6 py-3">
           <p>Nincs Beérkezett kérés ebben a kategóriában</p>
         </div>
       )}
