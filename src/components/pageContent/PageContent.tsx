@@ -35,9 +35,7 @@ export default function PageContent({ role }: PageContentProps) {
           {pageContent ? "Szerkesztés" : "Új tartalom"}
         </Button>
       )}
-      <h2 className="mt-12 mb-4 text-2xl font-bold text-black dark:text-white">
-        Körtagok
-      </h2>
+      <h2 className="mt-12 mb-4 text-2xl font-bold">Körtagok</h2>
       <Members />
     </div>
   );
