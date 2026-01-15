@@ -77,8 +77,8 @@ function RentingSection(props: {
   };
 
   return (
-    <section className="mb-4 w-full">
-      <h2 className="mb-2 text-2xl font-semibold">
+    <section className="mb-4 flex w-full max-w-2xl flex-col">
+      <h2 className="mb-2 text-xl sm:text-3xl">
         {statusTitle(status as RentalStatus)}
       </h2>
       {rentals && rentals.length > 0 ? (
@@ -87,9 +87,9 @@ function RentingSection(props: {
           return (
             <div
               key={rental.id}
-              className="bg-secondary my-2 w-full rounded-xl px-6 py-3 shadow-sm"
+              className="bg-secondary my-2 w-full rounded-md px-3 py-2 sm:px-6"
             >
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-col">
                   <p>
                     <strong>Bérlő:</strong>{" "}
@@ -111,7 +111,7 @@ function RentingSection(props: {
                     )}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   {/* Status select */}
                   <Select
                     defaultValue={rental.status}
@@ -119,7 +119,7 @@ function RentingSection(props: {
                       handleStatusChange(rental.id, value as RentalStatus)
                     }
                   >
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger className="w-[130px] sm:w-[180px]">
                       <SelectValue placeholder="Státusz" />
                     </SelectTrigger>
                     <SelectContent>

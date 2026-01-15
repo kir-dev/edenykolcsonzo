@@ -3,7 +3,7 @@ import Member from "./member";
 
 export default function Members() {
   return (
-    <div className="grid grid-flow-col grid-rows-4 gap-4 md:grid-rows-3 lg:grid-rows-2">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4">
       {members.map((member) => (
         <Member key={member.email} {...member} />
       ))}
