@@ -89,6 +89,55 @@ export const toolsRouter = createTRPCRouter({
     return tools;
   }),
 
+  getAvailableInPeriod: publicProcedure
+    .input(
+      z.object({
+        startDate: z.string(),
+        endDate: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const start = new Date(input.startDate);
+      const end = new Date(input.endDate);
+
+      // Get all rentable tools with their rentals that overlap the given period
+      const tools = await ctx.db.tool.findMany({
+        where: { rentable: true },
+        include: {
+          rentals: {
+            include: {
+              rental: true,
+            },
+            where: {
+              rental: {
+                // Overlapping date check: rental overlaps if:
+                // rental.startDate < input.endDate AND rental.endDate > input.startDate
+                startDate: { lt: end },
+                endDate: { gt: start },
+                // Only count active rentals (not returned)
+                status: { notIn: ["BROUGHT_BACK"] },
+              },
+            },
+          },
+        },
+      });
+
+      // Calculate available quantity for each tool
+      return tools
+        .map((tool) => {
+          const rentedQuantity = tool.rentals.reduce(
+            (sum, tr) => sum + tr.quantity,
+            0,
+          );
+          return {
+            ...tool,
+            availableQuantity: tool.quantity - rentedQuantity,
+          };
+        })
+        .filter((tool) => tool.availableQuantity > 0)
+        .sort((a, b) => a.name.localeCompare(b.name));
+    }),
+
   create: protectedProcedure
     .input(
       z.object({

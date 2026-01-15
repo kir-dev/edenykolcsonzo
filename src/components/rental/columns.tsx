@@ -7,9 +7,20 @@ import { toast } from "sonner";
 
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import type { ToolWithRentalInfo } from "~/types";
 
-export const columns: ColumnDef<ToolWithRentalInfo>[] = [
+// Extended type that includes availableQuantity from getAvailableInPeriod
+type ToolWithAvailability = {
+  id: number;
+  name: string;
+  description: string;
+  quantity: number;
+  rentable: boolean;
+  image: string | null;
+  availableQuantity: number;
+  rentals: unknown[];
+};
+
+export const columns: ColumnDef<ToolWithAvailability>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => {
@@ -32,21 +43,21 @@ export const columns: ColumnDef<ToolWithRentalInfo>[] = [
     ),
   },
   {
-    accessorKey: "quantity",
+    accessorKey: "availableQuantity",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Darabszám
+          Elérhető
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => {
       const tool = row.original;
-      return <div className="text-center">{tool.quantity}</div>;
+      return <div className="text-center">{tool.availableQuantity}</div>;
     },
   },
   {
@@ -62,8 +73,10 @@ export const columns: ColumnDef<ToolWithRentalInfo>[] = [
       )?.onToolSelection;
 
       const handleAmountChange = (newAmount: number) => {
-        if (newAmount > tool.quantity) {
-          toast.error(`Nincs ennyi ${tool.name}! ${tool.quantity} darab van!`);
+        if (newAmount > tool.availableQuantity) {
+          toast.error(
+            `Nincs ennyi ${tool.name}! ${tool.availableQuantity} darab elérhető!`,
+          );
           return;
         }
         setAmount(newAmount);
