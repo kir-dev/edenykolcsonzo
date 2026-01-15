@@ -30,7 +30,10 @@ export default function ToolsOverview({ session }: { session: any }) {
     const available: Tool[] = [];
     const unavailable: Tool[] = [];
     tools?.forEach((tool) => {
-      if (tool.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+      if (
+        tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tool.description.toLowerCase().includes(searchTerm.toLowerCase())
+      ) {
         if (tool.rentable) {
           available.push(tool);
         } else {

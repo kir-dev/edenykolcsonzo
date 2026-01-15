@@ -8,26 +8,27 @@ export interface MemberProps {
   avatar: string;
 }
 
-export default function Member({ name, role, avatar }: MemberProps) {
-  // Get initials for fallback
-  const initials = name
+// Helper function to get initials from name
+function getInitials(name: string): string {
+  return name
     .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
+    .map((word) => word.charAt(0).toUpperCase())
+    .slice(0, 2)
+    .join("");
+}
 
+export default function Member({ name, role, avatar }: MemberProps) {
   return (
     <Card className="flex w-full flex-col items-center p-3 sm:p-6">
-      <Avatar className="h-16 w-16 sm:h-20 sm:w-20 lg:h-32 lg:w-32">
-        <AvatarImage src={avatar} alt={name} />
-        <AvatarFallback className="text-lg sm:text-xl lg:text-2xl">
-          {initials}
-        </AvatarFallback>
-      </Avatar>
-      <CardHeader className="p-0 pt-2 text-center sm:pt-4">
-        <CardTitle className="text-sm sm:text-base lg:text-lg">
-          {name}
+      <CardHeader>
+        <CardTitle>
+          <Avatar className="h-16 w-16 sm:h-20 sm:w-20 lg:h-32 lg:w-32">
+            <AvatarImage src={avatar} alt={name} />
+            <AvatarFallback className="text-lg sm:text-xl lg:text-2xl">
+              {getInitials(name)}
+            </AvatarFallback>
+          </Avatar>
+          <p className="mt-4">{name}</p>
         </CardTitle>
         <CardDescription className="text-xs sm:text-sm">{role}</CardDescription>
       </CardHeader>
