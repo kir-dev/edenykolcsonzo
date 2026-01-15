@@ -37,7 +37,10 @@ export const columns: ColumnDef<ToolWithAvailability>[] = [
   },
   {
     accessorKey: "description",
-    header: "Leírás",
+    header: () => <span className="hidden sm:inline">Leírás</span>,
+    cell: ({ row }) => (
+      <span className="hidden sm:inline">{row.original.description}</span>
+    ),
   },
   {
     accessorKey: "availableQuantity",

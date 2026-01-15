@@ -13,8 +13,8 @@ export default async function RentingPage() {
 
   return (
     <HydrateClient>
-      <main className="flex flex-1 flex-col items-center justify-center text-white">
-        <h1 className="">Kölcsönzés</h1>
+      <main className="flex flex-1 flex-col items-center justify-center">
+        <h1>Kölcsönzés</h1>
         <div className="container flex justify-center px-8 py-10">
           <RentingView />
         </div>
