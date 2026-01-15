@@ -30,7 +30,10 @@ export default function ToolsOverview({ session }: { session: any }) {
     const available: Tool[] = [];
     const unavailable: Tool[] = [];
     tools?.forEach((tool) => {
-      if (tool.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+      if (
+        tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tool.description.toLowerCase().includes(searchTerm.toLowerCase())
+      ) {
         if (tool.rentable) {
           available.push(tool);
         } else {
@@ -46,18 +49,18 @@ export default function ToolsOverview({ session }: { session: any }) {
       {isLoading && <p>Loading...</p>}
       {error && <p>Error: {error.message}</p>}
 
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <Input
           type="text"
           placeholder="Keresés..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="mr-2 max-w-2xl border border-gray-300 bg-white text-black placeholder-gray-500 focus:border-blue-500 focus:ring-0 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500"
+          className="bg-card mr-2 max-w-2xl border focus:border-blue-500 focus:ring-0 sm:mr-2 sm:max-w-md dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500"
         />
         {isAdmin && (
           <Button
             onClick={() => setIsEditModalOpen(true)}
-            className="flex items-center"
+            className="flex items-center whitespace-nowrap"
           >
             <Plus className="mr-2" />
             Edény hozzáadása
@@ -65,7 +68,7 @@ export default function ToolsOverview({ session }: { session: any }) {
         )}
       </div>
 
-      <div className="flex flex-col gap-4 md:grid md:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {availableTools.map((tool) => (
           <ToolItem
             key={tool.id}
@@ -77,10 +80,10 @@ export default function ToolsOverview({ session }: { session: any }) {
       </div>
       {unavailableTools.length > 0 && (
         <div>
-          <h2 className="mt-8 mb-4 text-2xl font-bold text-black dark:text-white">
+          <h2 className="mt-8 mb-4 text-2xl font-bold">
             Nem bérelhető eszközök
           </h2>
-          <div className="flex flex-col gap-4 md:grid md:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {unavailableTools.map((tool) => (
               <ToolItem
                 key={tool.id}

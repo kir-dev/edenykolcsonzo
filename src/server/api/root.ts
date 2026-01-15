@@ -4,6 +4,7 @@ import { circleMemberRouter } from "./routers/dashboard";
 import { pageContentRouter } from "./routers/pageContent";
 import { rentalsRouter } from "./routers/rentals";
 import { toolsRouter } from "./routers/tools";
+import { usersRouter } from "./routers/users";
 
 /**
  * This is the primary router for your server.
@@ -15,6 +16,7 @@ export const appRouter = createTRPCRouter({
   rentals: rentalsRouter,
   dashboard: circleMemberRouter,
   pageContent: pageContentRouter,
+  users: usersRouter,
 });
 
 // export type definition of API
