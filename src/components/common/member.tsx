@@ -18,14 +18,6 @@ function getInitials(name: string): string {
 }
 
 export default function Member({ name, role, avatar }: MemberProps) {
-  // Get initials for fallback
-  const initials = name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-
   return (
     <Card className="flex w-full flex-col items-center p-3 sm:p-6">
       <CardHeader>
