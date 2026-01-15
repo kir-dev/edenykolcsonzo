@@ -87,7 +87,7 @@ function RentingSection(props: {
           return (
             <div
               key={rental.id}
-              className="my-2 w-full rounded-md bg-gray-200 px-3 py-2 sm:px-6 dark:bg-gray-700"
+              className="bg-secondary my-2 w-full rounded-md px-3 py-2 sm:px-6"
             >
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-col">
@@ -203,7 +203,7 @@ function RentingSection(props: {
                     {rental.ToolRental.map((toolRental) => (
                       <div
                         key={`${toolRental.rentalId}-${toolRental.toolId}`}
-                        className="relative flex items-center gap-4 rounded-md bg-gray-100 px-4 py-2 dark:bg-gray-600"
+                        className="bg-muted relative flex items-center gap-4 rounded-lg px-4 py-2"
                       >
                         <img
                           src={
@@ -284,7 +284,7 @@ function RentingSection(props: {
           );
         })
       ) : (
-        <div className="my-1 w-2xl rounded-md bg-gray-200 px-6 py-2 dark:bg-gray-700">
+        <div className="bg-secondary my-2 w-full rounded-xl px-6 py-3">
           <p>Nincs Beérkezett kérés ebben a kategóriában</p>
         </div>
       )}
