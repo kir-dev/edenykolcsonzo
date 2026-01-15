@@ -52,7 +52,7 @@ export default function ToolsOverview({ session }: { session: any }) {
           placeholder="Keresés..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="mr-2 max-w-2xl border border-gray-300 bg-white text-black placeholder-gray-500 focus:border-blue-500 focus:ring-0 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500"
+          className="border-border bg-card mr-2 max-w-2xl border"
         />
         {isAdmin && (
           <Button
@@ -77,7 +77,7 @@ export default function ToolsOverview({ session }: { session: any }) {
       </div>
       {unavailableTools.length > 0 && (
         <div>
-          <h2 className="mt-8 mb-4 text-2xl font-bold text-black dark:text-white">
+          <h2 className="mt-8 mb-4 text-2xl font-bold">
             Nem bérelhető eszközök
           </h2>
           <div className="flex flex-col gap-4 md:grid md:grid-cols-4">
