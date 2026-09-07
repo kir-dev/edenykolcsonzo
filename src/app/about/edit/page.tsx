@@ -1,7 +1,7 @@
-import { Role } from "@prisma/client";
 import { redirect } from "next/navigation";
 
 import EditPageContent from "~/components/pageContent/EditPageContent";
+import { isAdminRole } from "~/lib/utils";
 import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
 
@@ -14,7 +14,7 @@ const EditPage = async () => {
     redirect("/login");
   }
 
-  const isEKmember = session.user.role === Role.EK_MEMBER;
+  const isEKmember = isAdminRole(session.user.role);
 
   if (!isEKmember) {
     redirect("/about");

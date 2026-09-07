@@ -1,8 +1,8 @@
 "use client";
 
-import { Role } from "@prisma/client";
 import { redirect } from "next/navigation";
 
+import { isAdminRole } from "~/lib/utils";
 import { api } from "~/trpc/react"; // client-side TRPC hook
 
 import Markdown from "../common/markdown";
@@ -16,7 +16,7 @@ interface PageContentProps {
 export default function PageContent({ role }: PageContentProps) {
   const { data: pageContent, isLoading } =
     api.pageContent.get.useQuery("ABOUT");
-  const isEKmember = role === Role.EK_MEMBER;
+  const isEKmember = isAdminRole(role);
 
   if (isLoading) {
     return <div>Loading...</div>;

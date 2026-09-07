@@ -1,5 +1,6 @@
-import { Role } from "@prisma/client";
 import { z } from "zod";
+
+import { isAdminRole } from "~/lib/utils";
 
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
@@ -125,8 +126,8 @@ export const rentalsRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // Only EK_MEMBERs should be allowed
-      if (ctx.session?.user.role !== "EK_MEMBER") {
+      // Only EK_MEMBERs and ADMINs should be allowed
+      if (!isAdminRole(ctx.session?.user.role)) {
         throw new Error("Unauthorized");
       }
       return ctx.db.rental.update({
@@ -155,7 +156,7 @@ export const rentalsRouter = createTRPCRouter({
   remove: protectedProcedure
     .input(z.number())
     .mutation(async ({ ctx, input }) => {
-      if (ctx.session?.user.role !== Role.EK_MEMBER) {
+      if (!isAdminRole(ctx.session?.user.role)) {
         throw new Error("Unauthorized");
       }
       return ctx.db.$transaction([
@@ -178,7 +179,7 @@ export const rentalsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       // Ensure user is authorized.
-      if (ctx.session?.user.role !== Role.EK_MEMBER) {
+      if (!isAdminRole(ctx.session?.user.role)) {
         throw new Error("Unauthorized");
       }
 

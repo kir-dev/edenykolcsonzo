@@ -1,5 +1,6 @@
 "use client";
 
+import { isAdminRole } from "~/lib/utils";
 import { api } from "~/trpc/react";
 
 import ProfileImageEditor from "./ProfileImageEditor";
@@ -15,7 +16,7 @@ export default function ProfileHeader({
 }: ProfileHeaderProps) {
   const { data: currentUser } = api.users.getCurrentUser.useQuery();
 
-  const isEKMember = userRole === "EK_MEMBER";
+  const isEKMember = isAdminRole(userRole);
 
   return (
     <ProfileImageEditor
