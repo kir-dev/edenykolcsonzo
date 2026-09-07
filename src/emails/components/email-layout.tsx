@@ -45,7 +45,6 @@ export function EmailLayout({
             <Hr className="my-6 border-neutral-200" />
             <Text className="m-0 px-2 text-center text-xs text-neutral-400">
               Ezt az e-mailt az Edénykölcsönző rendszere küldte automatikusan.
-              Kérdés esetén válaszolj erre a levélre.
             </Text>
           </Container>
         </Body>

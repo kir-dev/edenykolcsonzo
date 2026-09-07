@@ -19,7 +19,8 @@ export async function sendMail({ to, subject, html }: SendMailInput) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: env.KIR_MAIL_API_KEY,
+        // Kir-Mail expects the "Api-Key" scheme prefix, not just the bare token.
+        Authorization: `Api-Key ${env.KIR_MAIL_API_KEY}`,
       },
       body: JSON.stringify({
         from: {

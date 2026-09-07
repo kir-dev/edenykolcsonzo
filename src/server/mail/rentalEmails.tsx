@@ -16,8 +16,9 @@ import RentalGivenOutEmail from "../../emails/rental-given-out";
 export type RentalEmailInput = RentalSummaryProps;
 
 export type RentalStatusChangeInput = RentalEmailInput & {
-  // Phone number of the EK_MEMBER/ADMIN who accepted the request. Only relevant
-  // (and only rendered) for the ACCEPTED email.
+  // Name and phone number of the EK_MEMBER/ADMIN who accepted the request. Only
+  // relevant (and only rendered) for the ACCEPTED email.
+  acceptedByName?: string | null;
   acceptedByPhone?: string | null;
 };
 

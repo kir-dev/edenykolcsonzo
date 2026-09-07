@@ -20,13 +20,15 @@ const STATUS_LEAD: Partial<Record<RentalStatus, string>> = {
 
 export interface RentalStatusEmailProps extends RentalSummaryProps {
   status: RentalStatus;
-  // Phone number of the EK_MEMBER/ADMIN who accepted the request, so the renter
-  // knows who to reach out to. Only set (and only shown) for the ACCEPTED email.
+  // Name and phone number of the EK_MEMBER/ADMIN who accepted the request, so the
+  // renter knows who to reach out to. Only set (and only shown) for the ACCEPTED email.
+  acceptedByName?: string | null;
   acceptedByPhone?: string | null;
 }
 
 export function RentalStatusEmail({
   status,
+  acceptedByName,
   acceptedByPhone,
   ...summary
 }: RentalStatusEmailProps) {
@@ -38,11 +40,11 @@ export function RentalStatusEmail({
     <EmailLayout previewText={subject} heading={subject}>
       <Text className="m-0 mb-4 text-base text-neutral-700">{lead}</Text>
       <RentalSummary {...summary} />
-      {status === "ACCEPTED" && acceptedByPhone && (
+      {status === "ACCEPTED" && (acceptedByName ?? acceptedByPhone) && (
         <Text className="m-0 text-base text-neutral-700">
           Elérhetőség egyeztetéshez:{" "}
           <span className="font-semibold text-neutral-900">
-            {acceptedByPhone}
+            {[acceptedByName, acceptedByPhone].filter(Boolean).join(" – ")}
           </span>
         </Text>
       )}
