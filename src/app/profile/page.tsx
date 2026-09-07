@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import ProfileHeader from "~/components/common/ProfileHeader";
+import ProfilePhoneNumber from "~/components/common/ProfilePhoneNumber";
 import {
   Table,
   TableBody,
@@ -18,6 +19,8 @@ import { api, HydrateClient } from "~/trpc/server";
 export default async function ProfilePage() {
   const session = await getServerAuthSession();
   const rentals = await api.rentals.getUserRentals();
+  // eslint-disable-next-line no-void
+  void api.users.getCurrentUser.prefetch();
 
   const expiredRentals = rentals.filter(
     (rental) => rental.status === "BROUGHT_BACK",
@@ -52,6 +55,7 @@ export default async function ProfilePage() {
             <b className="mr-2">Jogkör: </b>
             {roleToTitle(session.user.role)}
           </p>
+          <ProfilePhoneNumber />
           <div className="flex flex-col items-center">
             <Link
               href="/api/auth/signout"
@@ -76,6 +80,9 @@ export default async function ProfilePage() {
                   </TableHead>
                   <TableHead className="text-black dark:text-white">
                     Neve
+                  </TableHead>
+                  <TableHead className="text-black dark:text-white">
+                    Eszközök
                   </TableHead>
                   <TableHead className="text-black dark:text-white">
                     Státusz
@@ -103,6 +110,15 @@ export default async function ProfilePage() {
                       <TableCell>
                         {rental.title ?? `Bérlés #${rental.id}`}
                       </TableCell>
+                      <TableCell>
+                        <ul>
+                          {rental.ToolRental.map((toolRental) => (
+                            <li key={toolRental.toolId}>
+                              {toolRental.tool.name} ({toolRental.quantity} db)
+                            </li>
+                          ))}
+                        </ul>
+                      </TableCell>
                       <TableCell>{statusTitle(rental.status)}</TableCell>
                       <TableCell>{rental.startDate.toDateString()}</TableCell>
                       <TableCell className="hidden sm:table-cell">
@@ -124,7 +140,7 @@ export default async function ProfilePage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center italic">
+                    <TableCell colSpan={6} className="text-center italic">
                       Nincs aktív rendelésed
                     </TableCell>
                   </TableRow>
@@ -147,6 +163,9 @@ export default async function ProfilePage() {
                   </TableHead>
                   <TableHead className="text-black dark:text-white">
                     Neve
+                  </TableHead>
+                  <TableHead className="text-black dark:text-white">
+                    Eszközök
                   </TableHead>
                   <TableHead className="text-black dark:text-white">
                     Státusz
@@ -174,6 +193,15 @@ export default async function ProfilePage() {
                       <TableCell>
                         {rental.title ?? `Bérlés #${rental.id}`}
                       </TableCell>
+                      <TableCell>
+                        <ul>
+                          {rental.ToolRental.map((toolRental) => (
+                            <li key={toolRental.toolId}>
+                              {toolRental.tool.name} ({toolRental.quantity} db)
+                            </li>
+                          ))}
+                        </ul>
+                      </TableCell>
                       <TableCell>{statusTitle(rental.status)}</TableCell>
                       <TableCell>{rental.startDate.toDateString()}</TableCell>
                       <TableCell className="hidden sm:table-cell">
@@ -195,7 +223,7 @@ export default async function ProfilePage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center italic">
+                    <TableCell colSpan={6} className="text-center italic">
                       Még nincs archív rendelésed
                     </TableCell>
                   </TableRow>

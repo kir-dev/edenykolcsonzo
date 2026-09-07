@@ -57,7 +57,24 @@ export const usersRouter = createTRPCRouter({
         profileImage: true,
         email: true,
         role: true,
+        phoneNumber: true,
       },
     });
   }),
+
+  // Update the current user's contact phone number
+  updatePhoneNumber: protectedProcedure
+    .input(
+      z.object({
+        phoneNumber: z.string().min(1).nullable(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id;
+
+      return ctx.db.user.update({
+        where: { id: userId },
+        data: { phoneNumber: input.phoneNumber },
+      });
+    }),
 });

@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "~/components/ui/button";
@@ -42,6 +43,7 @@ const now = new Date();
 const formSchema = z
   .object({
     title: z.string().min(1, "Adj nevet a bérlésnek"),
+    contactPhone: z.string().min(1, "Adj meg egy telefonszámot"),
     startDate: z
       .date()
       .min(now, "The start date should not be before the current date"),
@@ -71,11 +73,24 @@ export default function StartRentalForm({
   defaultGroupId?: number;
 }) {
   const { data: groups } = api.groups.getMine.useQuery();
+  const { data: currentUser } = api.users.getCurrentUser.useQuery();
+  const utils = api.useUtils();
+
+  const updatePhoneNumberMutation = api.users.updatePhoneNumber.useMutation({
+    onSuccess: () => {
+      toast.success("Telefonszám elmentve a profilodban!");
+      utils.users.getCurrentUser.invalidate();
+    },
+    onError: (error) => {
+      toast.error(`Hiba történt: ${error.message}`);
+    },
+  });
 
   const formState = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: defaultTitle ?? "",
+      contactPhone: "",
       startDate: now,
       startTime: "08:00",
       startDateComment: "",
@@ -98,6 +113,22 @@ export default function StartRentalForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultTitle, defaultGroupId]);
 
+  // Auto-fill the contact phone from the user's profile once it loads. Only do this
+  // once (while the field is still untouched) so it doesn't clobber what they typed.
+  useEffect(() => {
+    if (
+      currentUser?.phoneNumber &&
+      !formState.formState.dirtyFields.contactPhone
+    ) {
+      formState.setValue("contactPhone", currentUser.phoneNumber);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser?.phoneNumber]);
+
+  const contactPhone = formState.watch("contactPhone");
+  const phoneDiffersFromProfile =
+    contactPhone.length > 0 && contactPhone !== (currentUser?.phoneNumber ?? "");
+
   return (
     <div className="bg-card rounded-3xl p-6 shadow-lg">
       <Form {...formState}>
@@ -119,6 +150,41 @@ export default function StartRentalForm({
                 <FormControl>
                   <Input placeholder="Pl. Gólyatábor" {...field} />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={formState.control}
+            name="contactPhone"
+            render={({ field }) => (
+              <FormItem className="mb-6">
+                <FormLabel>Kapcsolattartó telefonszám</FormLabel>
+                <div className="flex items-center gap-2">
+                  <FormControl>
+                    <Input
+                      type="tel"
+                      placeholder="Pl. +36 30 123 4567"
+                      {...field}
+                    />
+                  </FormControl>
+                  {phoneDiffersFromProfile && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={updatePhoneNumberMutation.isPending}
+                      onClick={() =>
+                        updatePhoneNumberMutation.mutate({
+                          phoneNumber: contactPhone,
+                        })
+                      }
+                    >
+                      Mentés a profilba
+                    </Button>
+                  )}
+                </div>
                 <FormMessage />
               </FormItem>
             )}

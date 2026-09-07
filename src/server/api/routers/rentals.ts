@@ -88,6 +88,7 @@ export const rentalsRouter = createTRPCRouter({
         endDateMessage: z.string(),
         quantity: z.number().min(1),
         groupId: z.number().optional(),
+        contactPhone: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -115,6 +116,7 @@ export const rentalsRouter = createTRPCRouter({
           startDateMessage: input.startDateMessage,
           endDateMessage: input.endDateMessage,
           groupId: input.groupId,
+          contactPhone: input.contactPhone,
           ToolRental: {
             create: {
               toolId: input.toolId,
@@ -146,6 +148,7 @@ export const rentalsRouter = createTRPCRouter({
         startDateMessage: z.string(),
         endDateMessage: z.string(),
         groupId: z.number().optional(),
+        contactPhone: z.string().optional(),
         tools: z.array(
           z.object({
             toolId: z.number(),
@@ -193,6 +196,7 @@ export const rentalsRouter = createTRPCRouter({
           startDateMessage: input.startDateMessage,
           endDateMessage: input.endDateMessage,
           groupId: input.groupId,
+          contactPhone: input.contactPhone,
           ToolRental: {
             create: input.tools.map((tool) => ({
               toolId: tool.toolId,

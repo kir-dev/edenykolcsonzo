@@ -8,6 +8,7 @@ export type RentingDetails = {
   endTime: string;
   endDateComment?: string;
   groupId?: number;
+  contactPhone?: string;
 };
 export type ToolRental = {
   tool: Tool;

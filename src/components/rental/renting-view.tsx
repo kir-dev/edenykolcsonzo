@@ -148,6 +148,7 @@ export default function RentingView() {
       startDateMessage: rentingDetails.startDateComment || "",
       endDateMessage: rentingDetails.endDateComment || "",
       groupId: rentingDetails.groupId,
+      contactPhone: rentingDetails.contactPhone,
       tools: selectedTools,
     });
   };

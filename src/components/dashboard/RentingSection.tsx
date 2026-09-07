@@ -104,6 +104,11 @@ function RentingSection(props: {
                       <strong>Csoport:</strong> {rental.group.name}
                     </p>
                   )}
+                  {rental.contactPhone && (
+                    <p>
+                      <strong>Telefonszám:</strong> {rental.contactPhone}
+                    </p>
+                  )}
                   <p>
                     <strong>Leadás időpontja:</strong>{" "}
                     <span>

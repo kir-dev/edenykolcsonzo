@@ -40,6 +40,10 @@ model Rental {
   groupId Int?
   group   Group? @relation(fields: [groupId], references: [id])
 
+  // Contact phone number for this rental. Defaults to the user's profile phone number
+  // but can be overridden per rental (see rentals.create / rentals.createMultiple).
+  contactPhone String?
+
   // Who accepted the request, who handed the tools out, and who took them back in.
   // Set automatically when the rental transitions to the corresponding status.
   acceptedById String?
@@ -110,6 +114,7 @@ model User {
   role          Role      @default(USER)
   roomNumber    Int?
   profileImage  String?
+  phoneNumber   String?
   email         String?   @unique
   emailVerified DateTime?
   image         String?
