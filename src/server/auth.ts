@@ -67,10 +67,13 @@ export const authOptions: NextAuthOptions = {
         // Update the user's role in the database based on the group membership.
         // The internal_id doesn't have a unique constraint, so we can't use a normal update here.
         // But we can't really have two users with the same internal_id, so this should be fine.
+        // ADMIN is granted manually (not derived from the SSO group), so it's excluded here
+        // to make sure this sync never demotes an admin back to USER/EK_MEMBER on login.
         await db.user
           .updateMany({
             where: {
               accounts: { some: { providerAccountId: profile.internal_id } },
+              role: { not: "ADMIN" },
             },
             data: { role: role },
           })

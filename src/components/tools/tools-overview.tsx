@@ -4,6 +4,7 @@ import { Tool } from "@prisma/client";
 import { Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import { isAdminRole } from "~/lib/utils";
 import { api } from "~/trpc/react";
 
 import EditItemModal from "../inventory/EditItemModal";
@@ -25,7 +26,9 @@ export default function ToolsOverview({ session }: { session: any }) {
     setSelectedTool(tool);
     setIsEditModalOpen(true);
   };
-  const isAdmin = session && session.user && session.user.role === "EK_MEMBER";
+  const isAdmin = Boolean(
+    session && session.user && isAdminRole(session.user.role),
+  );
   const [availableTools, unavailableTools] = useMemo(() => {
     const available: Tool[] = [];
     const unavailable: Tool[] = [];

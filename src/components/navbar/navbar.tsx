@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { isAdminRole } from "~/lib/utils";
 import { getServerAuthSession } from "~/server/auth";
 
 import MobileNav from "./mobile-nav";
@@ -14,7 +15,7 @@ const navItems = [
 export default async function Navbar() {
   const session = await getServerAuthSession();
   const isLoggedIn = Boolean(session && session.user);
-  const isAdmin = isLoggedIn && session?.user?.role === "EK_MEMBER";
+  const isAdmin = isLoggedIn && isAdminRole(session?.user?.role);
 
   return (
     <nav className="relative flex items-center justify-between px-4 py-4">
