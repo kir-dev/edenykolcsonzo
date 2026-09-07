@@ -19,6 +19,7 @@ import {
 import { type RentalWithUserAndTools } from "~/types";
 
 import { QuantityDialog } from "./QuantityDialog";
+import { RentalDetails } from "./RentalDetails";
 
 // A single rental's card in RentingSection: its details, status control, and (when
 // expanded) its per-tool list with quantity controls. Split out of RentingSection to
@@ -75,47 +76,11 @@ export function RentalCard(props: {
           <p>
             <strong>Bérlő:</strong> {rental.user.fullName ?? rental.user.email}
           </p>
-          {rental.group && (
-            <p>
-              <strong>Csoport:</strong> {rental.group.name}
-            </p>
-          )}
-          {rental.contactPhone && (
-            <p>
-              <strong>Telefonszám:</strong> {rental.contactPhone}
-            </p>
-          )}
           <p>
-            <strong>Leadás időpontja:</strong>{" "}
-            <span>({format(rental.createdAt, "yyyy. MM. dd. HH:mm")})</span>
+            <strong>Időszak:</strong>{" "}
+            {format(rental.startDate, "yyyy. MM. dd.")} -{" "}
+            {format(rental.endDate, "yyyy. MM. dd.")}
           </p>
-          <p>
-            <strong>Eszközök:</strong>{" "}
-            {rental.ToolRental.map(
-              (toolRental, idx) =>
-                `${toolRental.tool.name} (${toolRental.quantity}x)${
-                  idx === rental.ToolRental.length - 1 ? "" : ", "
-                }`,
-            )}
-          </p>
-          {rental.acceptedBy && (
-            <p>
-              <strong>Elfogadta:</strong>{" "}
-              {rental.acceptedBy.fullName ?? rental.acceptedBy.email}
-            </p>
-          )}
-          {rental.givenOutBy && (
-            <p>
-              <strong>Kiadta:</strong>{" "}
-              {rental.givenOutBy.fullName ?? rental.givenOutBy.email}
-            </p>
-          )}
-          {rental.returnedBy && (
-            <p>
-              <strong>Visszavette:</strong>{" "}
-              {rental.returnedBy.fullName ?? rental.returnedBy.email}
-            </p>
-          )}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {/* Status select */}
@@ -198,12 +163,13 @@ export function RentalCard(props: {
         </div>
       </div>
       <div
-        className={`overflow-hidden transition-all duration-300 ${
-          isExpanded ? "mt-2 max-h-96" : "max-h-0"
+        className={`overflow-y-auto transition-all duration-300 ${
+          isExpanded ? "mt-2 max-h-[640px]" : "max-h-0 overflow-hidden"
         }`}
       >
         {isExpanded && (
           <div className="flex flex-col gap-2">
+            <RentalDetails rental={rental} />
             {rental.ToolRental.map((toolRental) => (
               <div
                 key={`${toolRental.rentalId}-${toolRental.toolId}`}

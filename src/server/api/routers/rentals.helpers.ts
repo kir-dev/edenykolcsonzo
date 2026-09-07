@@ -2,7 +2,6 @@ import { type PrismaClient, type RentalStatus } from "@prisma/client";
 
 import { sendMail } from "~/server/mail/client";
 import {
-  rentalCreatedEmail,
   type RentalEmailInput,
   rentalStatusChangedEmail,
   type RentalStatusChangeInput,
@@ -38,15 +37,17 @@ export async function assertGroupMembership(
 
 // Fires the "your rental request was created" email. Fire-and-forget: mail failures
 // must never fail the mutation that created the rental.
+//
+// DISABLED for now - only the ACCEPTED status-change email should send (see
+// notifyStatusChanged below and its callers in rentals.ts). Remove this early
+// return to turn it back on.
 export function notifyRentalCreated(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   userEmail: string | null | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   input: RentalEmailInput,
 ) {
-  if (!userEmail) return;
-  // eslint-disable-next-line no-void
-  void rentalCreatedEmail(input).then(({ subject, html }) =>
-    sendMail({ to: userEmail, subject, html }),
-  );
+  return;
 }
 
 // Fires the "your rental's status changed" email. Callers are expected to only call

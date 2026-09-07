@@ -243,6 +243,8 @@ export const rentalsRouter = createTRPCRouter({
             name: tr.tool.name,
             quantity: tr.quantity,
           })),
+          acceptedByName:
+            rental.acceptedBy?.fullName ?? rental.acceptedBy?.email,
           acceptedByPhone: rental.acceptedBy?.phoneNumber,
         });
       }

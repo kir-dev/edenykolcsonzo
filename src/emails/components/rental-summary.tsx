@@ -13,8 +13,8 @@ export interface RentalSummaryProps {
   tools: RentalTool[];
 }
 
-function formatDate(date: Date) {
-  return date.toLocaleDateString("hu-HU");
+function formatDateTime(date: Date) {
+  return `${date.toLocaleDateString("hu-HU")} ${date.toLocaleTimeString("hu-HU", { hour: "2-digit", minute: "2-digit" })}`;
 }
 
 export function rentalDisplayName({
@@ -42,7 +42,7 @@ export function RentalSummary({
       <Row>
         <Text className="m-0 text-sm text-neutral-500">Időszak</Text>
         <Text className="m-0 mb-3 text-base font-semibold text-neutral-900">
-          {formatDate(startDate)} - {formatDate(endDate)}
+          {formatDateTime(startDate)} - {formatDateTime(endDate)}
         </Text>
       </Row>
       {tools.length > 0 && (

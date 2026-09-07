@@ -12,6 +12,7 @@ export default function RentalAcceptedEmail(
 RentalAcceptedEmail.PreviewProps = {
   rentalId: 42,
   title: "Zsúrasztal a szülinapra",
+  acceptedByName: "Kovács Anna",
   acceptedByPhone: "+36 20 123 4567",
   startDate: new Date("2026-09-10"),
   endDate: new Date("2026-09-14"),
