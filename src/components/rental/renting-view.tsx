@@ -74,9 +74,8 @@ export default function RentingView() {
   // in the newly chosen period) so the user only has to confirm the dates. The table
   // rows seed their quantity from this map on mount, so it must be ready *before* the
   // table renders - `preselectionApplied` gates that.
-  const [preselectionApplied, setPreselectionApplied] = useState(
-    !repeatRentalId,
-  );
+  const [preselectionApplied, setPreselectionApplied] =
+    useState(!repeatRentalId);
 
   useEffect(() => {
     if (!repeatRentalId || !repeatRental || !availableTools) return;

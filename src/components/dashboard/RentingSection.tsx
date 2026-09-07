@@ -1,27 +1,12 @@
 "use client";
 
 import { type RentalStatus } from "@prisma/client";
-import { format } from "date-fns";
 import React, { useState } from "react";
 
-// Dropdown Menu components for rental removal and tool options
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
 import { statusTitle } from "~/lib/utils";
 import { type RentalWithUserAndTools } from "~/types";
 
-import { QuantityDialog } from "./QuantityDialog";
+import { RentalCard } from "./RentalCard";
 
 function RentingSection(props: {
   status: string;
@@ -82,239 +67,23 @@ function RentingSection(props: {
         {statusTitle(status as RentalStatus)}
       </h2>
       {rentals && rentals.length > 0 ? (
-        rentals.map((rental) => {
-          const isExpanded = expandedIds.includes(rental.id);
-          return (
-            <div
-              key={rental.id}
-              className="bg-secondary my-2 w-full rounded-md px-3 py-2 sm:px-6"
-            >
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex flex-col">
-                  <p>
-                    <strong>Bérlés neve:</strong>{" "}
-                    {rental.title ?? `Bérlés #${rental.id}`}
-                  </p>
-                  <p>
-                    <strong>Bérlő:</strong>{" "}
-                    {rental.user.fullName ?? rental.user.email}
-                  </p>
-                  {rental.group && (
-                    <p>
-                      <strong>Csoport:</strong> {rental.group.name}
-                    </p>
-                  )}
-                  {rental.contactPhone && (
-                    <p>
-                      <strong>Telefonszám:</strong> {rental.contactPhone}
-                    </p>
-                  )}
-                  <p>
-                    <strong>Leadás időpontja:</strong>{" "}
-                    <span>
-                      ({format(rental.createdAt, "yyyy. MM. dd. HH:mm")})
-                    </span>
-                  </p>
-                  <p>
-                    <strong>Eszközök:</strong>{" "}
-                    {rental.ToolRental.map(
-                      (toolRental, idx) =>
-                        `${toolRental.tool.name} (${toolRental.quantity}x)${
-                          idx === rental.ToolRental.length - 1 ? "" : ", "
-                        }`,
-                    )}
-                  </p>
-                  {rental.acceptedBy && (
-                    <p>
-                      <strong>Elfogadta:</strong>{" "}
-                      {rental.acceptedBy.fullName ?? rental.acceptedBy.email}
-                    </p>
-                  )}
-                  {rental.givenOutBy && (
-                    <p>
-                      <strong>Kiadta:</strong>{" "}
-                      {rental.givenOutBy.fullName ?? rental.givenOutBy.email}
-                    </p>
-                  )}
-                  {rental.returnedBy && (
-                    <p>
-                      <strong>Visszavette:</strong>{" "}
-                      {rental.returnedBy.fullName ?? rental.returnedBy.email}
-                    </p>
-                  )}
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  {/* Status select */}
-                  <Select
-                    defaultValue={rental.status}
-                    onValueChange={(value) =>
-                      handleStatusChange(rental.id, value as RentalStatus)
-                    }
-                  >
-                    <SelectTrigger className="w-[130px] sm:w-[180px]">
-                      <SelectValue placeholder="Státusz" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="REQUESTED">Beérkezett</SelectItem>
-                      <SelectItem value="ACCEPTED">Elfogadott</SelectItem>
-                      <SelectItem value="GIVEN_OUT">Kiadott</SelectItem>
-                      <SelectItem value="BROUGHT_BACK">Visszahozott</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  {/* Rental removal three-dot button */}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button className="p-2">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M12 6v.01M12 12v.01M12 18v.01"
-                          />
-                        </svg>
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem
-                        onClick={() => handleRemoveRental(rental.id)}
-                      >
-                        Kérés törlése
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                  <button onClick={() => toggleExpanded(rental.id)}>
-                    {isExpanded ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6 rotate-180 transform transition-transform duration-300"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 15l7-7 7 7"
-                        />
-                      </svg>
-                    ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6 transform transition-transform duration-300"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    )}
-                  </button>
-                </div>
-              </div>
-              <div
-                className={`overflow-hidden transition-all duration-300 ${
-                  isExpanded ? "mt-2 max-h-96" : "max-h-0"
-                }`}
-              >
-                {isExpanded && (
-                  <div className="flex flex-col gap-2">
-                    {rental.ToolRental.map((toolRental) => (
-                      <div
-                        key={`${toolRental.rentalId}-${toolRental.toolId}`}
-                        className="bg-muted relative flex items-center gap-4 rounded-lg px-4 py-2"
-                      >
-                        <img
-                          src={
-                            toolRental.tool.image ||
-                            "https://via.placeholder.com/50"
-                          }
-                          alt={toolRental.tool.name}
-                          className="h-10 w-10 rounded object-cover"
-                        />
-                        <div className="flex flex-col">
-                          <p className="font-medium">{toolRental.tool.name}</p>
-                          <p className="text-sm">
-                            Mennyiség: {toolRental.quantity} db
-                          </p>
-                        </div>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <button className="ml-auto p-2">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M12 6v.01M12 12v.01M12 18v.01"
-                                />
-                              </svg>
-                            </button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                openQuantityDialog(
-                                  rental.id,
-                                  toolRental.toolId,
-                                  toolRental.quantity,
-                                )
-                              }
-                            >
-                              Mennyiség megváltoztatása
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                handleReduceQuantity(
-                                  rental.id,
-                                  toolRental.toolId,
-                                  0,
-                                )
-                              }
-                            >
-                              Eszköz törlése
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                        {dialogData &&
-                          dialogData.open &&
-                          dialogData.rentalId === rental.id &&
-                          dialogData.toolId === toolRental.toolId && (
-                            <QuantityDialog
-                              open
-                              newQuantity={newQuantity}
-                              setNewQuantity={setNewQuantity}
-                              onConfirm={confirmQuantityChange}
-                              onCancel={cancelQuantityChange}
-                            />
-                          )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        })
+        rentals.map((rental) => (
+          <RentalCard
+            key={rental.id}
+            rental={rental}
+            isExpanded={expandedIds.includes(rental.id)}
+            toggleExpanded={toggleExpanded}
+            handleStatusChange={handleStatusChange}
+            handleRemoveRental={handleRemoveRental}
+            handleReduceQuantity={handleReduceQuantity}
+            openQuantityDialog={openQuantityDialog}
+            dialogData={dialogData}
+            newQuantity={newQuantity}
+            setNewQuantity={setNewQuantity}
+            confirmQuantityChange={confirmQuantityChange}
+            cancelQuantityChange={cancelQuantityChange}
+          />
+        ))
       ) : (
         <div className="bg-secondary my-2 w-full rounded-xl px-6 py-3">
           <p>Nincs Beérkezett kérés ebben a kategóriában</p>

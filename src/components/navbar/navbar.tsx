@@ -42,6 +42,9 @@ export default async function Navbar() {
         {isAdmin && (
           <NavItem href="/dashboard" title="Kérés Kezelő" colorVariant="sky" />
         )}
+        {isAdmin && (
+          <NavItem href="/summary" title="Összesítő" colorVariant="sky" />
+        )}
         {isStrictAdmin && (
           <NavItem href="/admin/logs" title="Napló" colorVariant="sky" />
         )}

@@ -1,29 +1,20 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "~/components/ui/button";
-import { Calendar } from "~/components/ui/calendar";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -31,12 +22,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { Textarea } from "~/components/ui/textarea";
-import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 import { RentingDetails } from "~/types/renting";
 
 import { Input } from "../ui/input";
+import { DateRangeField } from "./date-range-field";
 
 const now = new Date();
 
@@ -110,8 +100,7 @@ export default function StartRentalForm({
     if (defaultGroupId !== undefined) {
       formState.setValue("groupId", String(defaultGroupId));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defaultTitle, defaultGroupId]);
+  }, [defaultTitle, defaultGroupId, formState]);
 
   // Auto-fill the contact phone from the user's profile once it loads. Only do this
   // once (while the field is still untouched) so it doesn't clobber what they typed.
@@ -122,12 +111,12 @@ export default function StartRentalForm({
     ) {
       formState.setValue("contactPhone", currentUser.phoneNumber);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser?.phoneNumber]);
+  }, [currentUser?.phoneNumber, formState]);
 
   const contactPhone = formState.watch("contactPhone");
   const phoneDiffersFromProfile =
-    contactPhone.length > 0 && contactPhone !== (currentUser?.phoneNumber ?? "");
+    contactPhone.length > 0 &&
+    contactPhone !== (currentUser?.phoneNumber ?? "");
 
   return (
     <div className="bg-card rounded-3xl p-6 shadow-lg">
@@ -196,10 +185,7 @@ export default function StartRentalForm({
             render={({ field }) => (
               <FormItem className="mb-6">
                 <FormLabel>Csoport (opcionális)</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value}
-                >
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger className="w-[240px]">
                       <SelectValue placeholder="Nincs csoport kiválasztva" />
@@ -219,143 +205,25 @@ export default function StartRentalForm({
           />
 
           <div className="mb-12 flex w-full items-center justify-center not-md:flex-col md:space-x-20">
-            <div className="flex flex-col space-y-6 not-md:mb-6">
-              <FormField
-                control={formState.control}
-                name="startDate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Kölcsönzés kezdete</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-[240px] pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground",
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormDescription />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={formState.control}
-                name="startTime"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Átvétel ideje</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={formState.control}
-                name="startDateComment"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Megjegyzés a kezdő dátumhoz</FormLabel>
-                    <FormControl>
-                      <Textarea className="resize-none" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="flex flex-col space-y-6">
-              <FormField
-                control={formState.control}
-                name="endDate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Kölcsönzés vége</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-[240px] pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground",
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormDescription />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={formState.control}
-                name="endTime"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Leadás ideje</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={formState.control}
-                name="endDateComment"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Megjegyzés a befejezési időponthoz</FormLabel>
-                    <FormControl>
-                      <Textarea className="resize-none" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <DateRangeField
+              control={formState.control}
+              dateFieldName="startDate"
+              timeFieldName="startTime"
+              commentFieldName="startDateComment"
+              dateLabel="Kölcsönzés kezdete"
+              timeLabel="Átvétel ideje"
+              commentLabel="Megjegyzés a kezdő dátumhoz"
+              autoFocusCalendar
+            />
+            <DateRangeField
+              control={formState.control}
+              dateFieldName="endDate"
+              timeFieldName="endTime"
+              commentFieldName="endDateComment"
+              dateLabel="Kölcsönzés vége"
+              timeLabel="Leadás ideje"
+              commentLabel="Megjegyzés a befejezési időponthoz"
+            />
           </div>
 
           <Button type="submit" className="mt-12">

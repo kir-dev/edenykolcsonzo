@@ -63,6 +63,15 @@ export default function MobileNav({
                 Kérés Kezelő
               </Link>
             )}
+            {isAdmin && (
+              <Link
+                href="/summary"
+                className="hover:bg-accent rounded-md px-4 py-2"
+                onClick={() => setIsOpen(false)}
+              >
+                Összesítő
+              </Link>
+            )}
             {isStrictAdmin && (
               <Link
                 href="/admin/logs"

@@ -1,44 +1,19 @@
-import { type PrismaClient, type RentalStatus } from "@prisma/client";
 import { z } from "zod";
 
 import { isAdminRole } from "~/lib/utils";
-import { sendMail } from "~/server/mail/client";
-import {
-  rentalCreatedEmail,
-  rentalStatusChangedEmail,
-} from "~/server/mail/rentalEmails";
 
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-
-// Maps a target rental status to the Rental field that should record who made
-// the transition happen. REQUESTED has no such field - it's set on creation.
-const STATUS_ACTOR_FIELD: Partial<
-  Record<RentalStatus, "acceptedById" | "givenOutById" | "returnedById">
-> = {
-  ACCEPTED: "acceptedById",
-  GIVEN_OUT: "givenOutById",
-  BROUGHT_BACK: "returnedById",
-};
-
-// Verifies the group exists and the user is currently an active member of it, throwing
-// otherwise. A rental must not be attachable to an arbitrary/foreign group.
-async function assertGroupMembership(
-  db: PrismaClient,
-  userId: string,
-  groupId: number | undefined,
-) {
-  if (groupId === undefined) {
-    return;
-  }
-  const membership = await db.userGroup.findUnique({
-    where: { userId_groupId: { userId, groupId } },
-  });
-  if (!membership) {
-    throw new Error("You are not a member of this group");
-  }
-}
+import {
+  assertGroupMembership,
+  notifyRentalCreated,
+  notifyStatusChanged,
+  STATUS_ACTOR_FIELD,
+} from "./rentals.helpers";
+import { rentalsAdminProcedures } from "./rentals-admin";
 
 export const rentalsRouter = createTRPCRouter({
+  ...rentalsAdminProcedures,
+
   get: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db.rental.findMany({
       include: {
@@ -100,11 +75,7 @@ export const rentalsRouter = createTRPCRouter({
       if (!tool) {
         throw new Error("Tool not found");
       }
-      await assertGroupMembership(
-        ctx.db,
-        ctx.session!.user.id,
-        input.groupId,
-      );
+      await assertGroupMembership(ctx.db, ctx.session!.user.id, input.groupId);
 
       const rental = await ctx.db.rental.create({
         data: {
@@ -126,15 +97,13 @@ export const rentalsRouter = createTRPCRouter({
         },
       });
 
-      if (ctx.session!.user.email) {
-        const { subject, html } = rentalCreatedEmail({
-          rentalId: rental.id,
-          startDate: rental.startDate,
-          endDate: rental.endDate,
-          tools: [{ name: tool.name, quantity: input.quantity }],
-        });
-        void sendMail({ to: ctx.session!.user.email, subject, html });
-      }
+      notifyRentalCreated(ctx.session!.user.email, {
+        rentalId: rental.id,
+        title: rental.title,
+        startDate: rental.startDate,
+        endDate: rental.endDate,
+        tools: [{ name: tool.name, quantity: input.quantity }],
+      });
 
       return rental;
     }),
@@ -180,11 +149,7 @@ export const rentalsRouter = createTRPCRouter({
         }
       }
 
-      await assertGroupMembership(
-        ctx.db,
-        ctx.session!.user.id,
-        input.groupId,
-      );
+      await assertGroupMembership(ctx.db, ctx.session!.user.id, input.groupId);
 
       const rental = await ctx.db.rental.create({
         data: {
@@ -211,18 +176,16 @@ export const rentalsRouter = createTRPCRouter({
         },
       });
 
-      if (ctx.session!.user.email) {
-        const { subject, html } = rentalCreatedEmail({
-          rentalId: rental.id,
-          startDate: rental.startDate,
-          endDate: rental.endDate,
-          tools: rental.ToolRental.map((tr) => ({
-            name: tr.tool.name,
-            quantity: tr.quantity,
-          })),
-        });
-        void sendMail({ to: ctx.session!.user.email, subject, html });
-      }
+      notifyRentalCreated(ctx.session!.user.email, {
+        rentalId: rental.id,
+        title: rental.title,
+        startDate: rental.startDate,
+        endDate: rental.endDate,
+        tools: rental.ToolRental.map((tr) => ({
+          name: tr.tool.name,
+          quantity: tr.quantity,
+        })),
+      });
 
       return rental;
     }),
@@ -253,6 +216,7 @@ export const rentalsRouter = createTRPCRouter({
           },
           include: {
             user: true,
+            acceptedBy: true,
             ToolRental: { include: { tool: true } },
           },
         }),
@@ -267,17 +231,20 @@ export const rentalsRouter = createTRPCRouter({
         }),
       ]);
 
-      if (rental.user.email) {
-        const { subject, html } = rentalStatusChangedEmail(input.status, {
+      // Only the ACCEPTED transition sends an email for now - GIVEN_OUT and
+      // BROUGHT_BACK notifications aren't ready yet.
+      if (input.status === "ACCEPTED") {
+        notifyStatusChanged(rental.user.email, input.status, {
           rentalId: rental.id,
+          title: rental.title,
           startDate: rental.startDate,
           endDate: rental.endDate,
           tools: rental.ToolRental.map((tr) => ({
             name: tr.tool.name,
             quantity: tr.quantity,
           })),
+          acceptedByPhone: rental.acceptedBy?.phoneNumber,
         });
-        void sendMail({ to: rental.user.email, subject, html });
       }
 
       return rental;
@@ -302,91 +269,6 @@ export const rentalsRouter = createTRPCRouter({
           ToolRental: { include: { tool: true } },
         },
         orderBy: { createdAt: "desc" },
-      });
-    }),
-
-  remove: protectedProcedure
-    .input(z.number())
-    .mutation(async ({ ctx, input }) => {
-      if (!isAdminRole(ctx.session?.user.role)) {
-        throw new Error("Unauthorized");
-      }
-      return ctx.db.$transaction([
-        ctx.db.toolRental.deleteMany({
-          where: { rentalId: input },
-        }),
-        ctx.db.rental.delete({
-          where: { id: input },
-        }),
-      ]);
-    }),
-
-  changeQuantity: protectedProcedure
-    .input(
-      z.object({
-        rentalId: z.number(),
-        toolId: z.number(),
-        quantity: z.number(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      // Ensure user is authorized.
-      if (!isAdminRole(ctx.session?.user.role)) {
-        throw new Error("Unauthorized");
-      }
-
-      // Negative quantities are not allowed.
-      if (input.quantity < 0) {
-        throw new Error("Quantity cannot be negative");
-      }
-
-      // When quantity is zero, delete the toolRental.
-      if (input.quantity === 0) {
-        await ctx.db.toolRental.delete({
-          where: {
-            rentalId_toolId: {
-              rentalId: input.rentalId,
-              toolId: input.toolId,
-            },
-          },
-        });
-        // If there are no more tool rentals for this rental, delete the rental.
-        const remainingCount = await ctx.db.toolRental.count({
-          where: { rentalId: input.rentalId },
-        });
-        if (remainingCount === 0) {
-          return await ctx.db.rental.delete({
-            where: { id: input.rentalId },
-          });
-        }
-        return;
-      }
-
-      // Fetch the available quantity of the tool.
-      const tool = await ctx.db.tool.findUnique({
-        where: { id: input.toolId },
-        select: { quantity: true },
-      });
-      if (!tool) {
-        throw new Error("Tool not found");
-      }
-      if (input.quantity > tool.quantity) {
-        throw new Error("Quantity cannot be more than available quantity");
-      }
-
-      // TODO: Check for available quantity in the time slot
-
-      // Update the toolRental with the new quantity.
-      return await ctx.db.toolRental.update({
-        where: {
-          rentalId_toolId: {
-            rentalId: input.rentalId,
-            toolId: input.toolId,
-          },
-        },
-        data: {
-          quantity: input.quantity,
-        },
       });
     }),
 });

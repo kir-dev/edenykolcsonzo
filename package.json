@@ -11,6 +11,7 @@
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
     "dev": "next dev --turbopack",
+    "email:dev": "email dev --dir src/emails --port 3010",
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start"
@@ -27,6 +28,8 @@
     "@radix-ui/react-popover": "^1.1.14",
     "@radix-ui/react-select": "^2.2.5",
     "@radix-ui/react-slot": "^1.2.3",
+    "@react-email/components": "^1.0.12",
+    "@react-email/render": "^2.1.0",
     "@shadcn/ui": "^0.0.4",
     "@t3-oss/env-nextjs": "^0.13.6",
     "@tanstack/react-query": "^5.79.0",
@@ -61,6 +64,7 @@
     "zod": "^3.25.36"
   },
   "devDependencies": {
+    "@react-email/ui": "6.9.3",
     "@tailwindcss/postcss": "^4.1.8",
     "@types/eslint": "^8.56.12",
     "@types/node": "^22.15.24",
@@ -74,6 +78,7 @@
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "prisma": "^6.8.2",
+    "react-email": "^6.9.3",
     "tailwindcss": "^4.1.8",
     "typescript": "^5.8.3"
   },
