@@ -1,11 +1,14 @@
 import type { Tool } from "@prisma/client";
 export type RentingDetails = {
+  title: string;
   startDate: Date;
   startTime: string;
   startDateComment?: string;
   endDate: Date;
   endTime: string;
   endDateComment?: string;
+  groupId?: number;
+  contactPhone?: string;
 };
 export type ToolRental = {
   tool: Tool;

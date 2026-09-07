@@ -11,6 +11,7 @@ interface MobileNavProps {
   userName?: string;
   isLoggedIn: boolean;
   isAdmin: boolean;
+  isStrictAdmin?: boolean;
 }
 
 export default function MobileNav({
@@ -18,6 +19,7 @@ export default function MobileNav({
   userName,
   isLoggedIn,
   isAdmin,
+  isStrictAdmin,
 }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -59,6 +61,24 @@ export default function MobileNav({
                 onClick={() => setIsOpen(false)}
               >
                 Kérés Kezelő
+              </Link>
+            )}
+            {isAdmin && (
+              <Link
+                href="/summary"
+                className="hover:bg-accent rounded-md px-4 py-2"
+                onClick={() => setIsOpen(false)}
+              >
+                Összesítő
+              </Link>
+            )}
+            {isStrictAdmin && (
+              <Link
+                href="/admin/logs"
+                className="hover:bg-accent rounded-md px-4 py-2"
+                onClick={() => setIsOpen(false)}
+              >
+                Napló
               </Link>
             )}
             {items.map((item) => (

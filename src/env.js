@@ -24,6 +24,10 @@ export const env = createEnv({
     ),
     AUTHSCH_CLIENT_ID: z.string(),
     AUTHSCH_CLIENT_SECRET: z.string(),
+    KIR_MAIL_API_URL: z.string().url().default("https://mail.kir-dev.hu/api"),
+    KIR_MAIL_API_KEY: z.string().optional(),
+    KIR_MAIL_FROM_EMAIL: z.string().default("noreply@kir-dev.hu"),
+    KIR_MAIL_FROM_NAME: z.string().default("Edénykölcsönző"),
   },
 
   /**
@@ -46,6 +50,10 @@ export const env = createEnv({
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     AUTHSCH_CLIENT_ID: process.env.AUTHSCH_CLIENT_ID,
     AUTHSCH_CLIENT_SECRET: process.env.AUTHSCH_CLIENT_SECRET,
+    KIR_MAIL_API_URL: process.env.KIR_MAIL_API_URL,
+    KIR_MAIL_API_KEY: process.env.KIR_MAIL_API_KEY,
+    KIR_MAIL_FROM_EMAIL: process.env.KIR_MAIL_FROM_EMAIL,
+    KIR_MAIL_FROM_NAME: process.env.KIR_MAIL_FROM_NAME,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

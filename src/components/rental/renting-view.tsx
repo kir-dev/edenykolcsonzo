@@ -1,6 +1,6 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { api } from "~/trpc/react";
@@ -13,6 +13,14 @@ import StartRentalForm from "./start-rental-form";
 
 export default function RentingView() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const repeatRentalId = searchParams.get("repeat");
+
+  const { data: repeatRental } = api.rentals.getById.useQuery(
+    Number(repeatRentalId),
+    { enabled: Boolean(repeatRentalId) },
+  );
+
   const [rentingDetails, setRentingDetails] = useState<RentingDetails | null>(
     null,
   );
@@ -62,6 +70,31 @@ export default function RentingView() {
     { enabled: Boolean(dateRange) },
   );
 
+  // When re-renting, pre-select the same tools (clamped to what's actually available
+  // in the newly chosen period) so the user only has to confirm the dates. The table
+  // rows seed their quantity from this map on mount, so it must be ready *before* the
+  // table renders - `preselectionApplied` gates that.
+  const [preselectionApplied, setPreselectionApplied] =
+    useState(!repeatRentalId);
+
+  useEffect(() => {
+    if (!repeatRentalId || !repeatRental || !availableTools) return;
+    const preselected: Record<number, number> = {};
+    for (const toolRental of repeatRental.ToolRental) {
+      const available = availableTools.find(
+        (tool) => tool.id === toolRental.toolId,
+      );
+      if (available) {
+        preselected[toolRental.toolId] = Math.min(
+          toolRental.quantity,
+          available.availableQuantity,
+        );
+      }
+    }
+    setSelectedToolsMap(preselected);
+    setPreselectionApplied(true);
+  }, [repeatRentalId, repeatRental, availableTools]);
+
   const handleToolSelection = (toolId: number, amount: number) => {
     if (amount === 0) {
       setSelectedToolsMap((prev) => {
@@ -108,10 +141,13 @@ export default function RentingView() {
     }
 
     createRentalMutation.mutate({
+      title: rentingDetails.title,
       startDate: dateRange.startDate,
       endDate: dateRange.endDate,
       startDateMessage: rentingDetails.startDateComment || "",
       endDateMessage: rentingDetails.endDateComment || "",
+      groupId: rentingDetails.groupId,
+      contactPhone: rentingDetails.contactPhone,
       tools: selectedTools,
     });
   };
@@ -123,10 +159,16 @@ export default function RentingView() {
     return <div>Error: {createRentalMutation.error.message}</div>;
   }
   if (!rentingDetails) {
-    return <StartRentalForm onSubmit={setRentingDetails} />;
+    return (
+      <StartRentalForm
+        onSubmit={setRentingDetails}
+        defaultTitle={repeatRental?.title ?? undefined}
+        defaultGroupId={repeatRental?.groupId ?? undefined}
+      />
+    );
   }
 
-  if (isLoadingTools) {
+  if (isLoadingTools || !preselectionApplied) {
     return <div className="text-center">Elérhető eszközök betöltése...</div>;
   }
 
@@ -158,6 +200,7 @@ export default function RentingView() {
           columns={columns}
           data={availableTools}
           onToolSelection={handleToolSelection}
+          initialQuantities={selectedToolsMap}
         />
         <Button onClick={handleRent} size="lg" className="w-fit">
           Bérlés véglegesítése

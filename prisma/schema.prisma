@@ -2,131 +2,190 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["fullTextSearchPostgres"]
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearchPostgres"]
 }
 
 datasource db {
-    provider = "postgresql"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
+  // Further reading:
+  // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
+  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+  url      = env("DATABASE_URL")
 }
 
 enum RentalStatus {
-    REQUESTED
-    ACCEPTED
-    GIVEN_OUT
-    BROUGHT_BACK
+  REQUESTED
+  ACCEPTED
+  GIVEN_OUT
+  BROUGHT_BACK
 }
 
 model Rental {
-    id               Int          @id @default(autoincrement())
-    userId           String
-    user             User         @relation(fields: [userId], references: [id])
-    status           RentalStatus @default(REQUESTED)
-    startDateMessage String
-    endDateMessage   String
-    startDate        DateTime
-    endDate          DateTime
-    createdAt        DateTime     @default(now())
-    updatedAt        DateTime     @updatedAt
-    ToolRental       ToolRental[]
+  id               Int          @id @default(autoincrement())
+  title            String?
+  userId           String
+  user             User         @relation(fields: [userId], references: [id])
+  status           RentalStatus @default(REQUESTED)
+  startDateMessage String
+  endDateMessage   String
+  startDate        DateTime
+  endDate          DateTime
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  ToolRental       ToolRental[]
+
+  // Optional PÉK group (from the AuthSCH SSO profile) this rental is done on behalf of.
+  groupId Int?
+  group   Group? @relation(fields: [groupId], references: [id])
+
+  // Contact phone number for this rental. Defaults to the user's profile phone number
+  // but can be overridden per rental (see rentals.create / rentals.createMultiple).
+  contactPhone String?
+
+  // Who accepted the request, who handed the tools out, and who took them back in.
+  // Set automatically when the rental transitions to the corresponding status.
+  acceptedById String?
+  acceptedBy   User?   @relation("RentalAcceptedBy", fields: [acceptedById], references: [id])
+  givenOutById String?
+  givenOutBy   User?   @relation("RentalGivenOutBy", fields: [givenOutById], references: [id])
+  returnedById String?
+  returnedBy   User?   @relation("RentalReturnedBy", fields: [returnedById], references: [id])
 }
 
 model Tool {
-    id          Int          @id @default(autoincrement())
-    name        String
-    description String
-    rentable    Boolean
-    quantity    Int
-    image       String?
-    createdAt   DateTime     @default(now())
-    updatedAt   DateTime     @updatedAt
-    rentals     ToolRental[]
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String
+  rentable    Boolean
+  quantity    Int
+  image       String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  rentals     ToolRental[]
 }
 
 model ToolRental {
-    rentalId            Int
-    rental              Rental   @relation(fields: [rentalId], references: [id])
-    toolId              Int
-    tool                Tool     @relation(fields: [toolId], references: [id])
-    quantity            Int
-    createdAt           DateTime @default(now())
-    updatedAt           DateTime @updatedAt
-    broughtBackQuantity Int?
+  rentalId            Int
+  rental              Rental   @relation(fields: [rentalId], references: [id])
+  toolId              Int
+  tool                Tool     @relation(fields: [toolId], references: [id])
+  quantity            Int
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  broughtBackQuantity Int?
 
-    @@id([rentalId, toolId])
+  @@id([rentalId, toolId])
 }
 
 // Necessary for Next auth
 model Account {
-    id                       String  @id @default(cuid())
-    userId                   String
-    type                     String
-    provider                 String
-    providerAccountId        String
-    refresh_token            String? // @db.Text
-    access_token             String? // @db.Text
-    expires_at               Int?
-    token_type               String?
-    scope                    String?
-    id_token                 String? // @db.Text
-    session_state            String?
-    user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    refresh_token_expires_in Int?
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String? // @db.Text
+  access_token             String? // @db.Text
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String? // @db.Text
+  session_state            String?
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refresh_token_expires_in Int?
 
-    @@unique([provider, providerAccountId])
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-    id            String    @id @default(cuid())
-    fullName      String?
-    nickname      String?
-    role          Role      @default(USER)
-    roomNumber    Int?
-    profileImage  String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
+  id            String    @id @default(cuid())
+  fullName      String?
+  nickname      String?
+  role          Role      @default(USER)
+  roomNumber    Int?
+  profileImage  String?
+  phoneNumber   String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
 
-    Rental Rental[]
+  Rental          Rental[]
+  RentalsAccepted Rental[]    @relation("RentalAcceptedBy")
+  RentalsGivenOut Rental[]    @relation("RentalGivenOutBy")
+  RentalsReturned Rental[]    @relation("RentalReturnedBy")
+  AuditLogs       AuditLog[]
+  Groups          UserGroup[]
+}
+
+// A PÉK group (from the AuthSCH SSO profile's eduPersonEntitlement), kept in sync on login.
+// Mirrors the external group id/name so a rental can be attached to one.
+model Group {
+  id      Int         @id
+  name    String
+  members UserGroup[]
+  Rentals Rental[]
+}
+
+// The currently active PÉK group memberships of a user, refreshed on every login.
+model UserGroup {
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  groupId Int
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@id([userId, groupId])
 }
 
 enum Role {
-    USER
-    EK_MEMBER
-    ADMIN
+  USER
+  EK_MEMBER
+  ADMIN
+}
+
+// A record of significant actions taken in the app (e.g. rental status changes),
+// so admins can see who did what and when.
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  action     String
+  entityType String
+  entityId   String
+  actorId    String?
+  actor      User?    @relation(fields: [actorId], references: [id])
+  message    String
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
 }
 
 model PagesContent {
-    id        String   @id @default(cuid())
-    pageType  PageType @unique
-    content   String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @default(cuid())
+  pageType  PageType @unique
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum PageType {
-    ABOUT
+  ABOUT
 }
