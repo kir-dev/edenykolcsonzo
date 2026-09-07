@@ -16,6 +16,7 @@ export default async function Navbar() {
   const session = await getServerAuthSession();
   const isLoggedIn = Boolean(session && session.user);
   const isAdmin = isLoggedIn && isAdminRole(session?.user?.role);
+  const isStrictAdmin = isLoggedIn && session?.user?.role === "ADMIN";
 
   return (
     <nav className="relative flex items-center justify-between px-4 py-4">
@@ -41,6 +42,9 @@ export default async function Navbar() {
         {isAdmin && (
           <NavItem href="/dashboard" title="Kérés Kezelő" colorVariant="sky" />
         )}
+        {isStrictAdmin && (
+          <NavItem href="/admin/logs" title="Napló" colorVariant="sky" />
+        )}
         {navItems.map((item) => (
           <li key={item.href}>
             <NavItem
@@ -61,6 +65,7 @@ export default async function Navbar() {
           userName={session?.user?.name ?? undefined}
           isLoggedIn={isLoggedIn}
           isAdmin={isAdmin}
+          isStrictAdmin={isStrictAdmin}
         />
       </div>
     </nav>

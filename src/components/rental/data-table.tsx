@@ -23,12 +23,14 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   onToolSelection?: (toolId: number, amount: number) => void;
+  initialQuantities?: Record<number, number>;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   onToolSelection,
+  initialQuantities,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -36,7 +38,9 @@ export function DataTable<TData, TValue>({
     data,
     columns: onToolSelection
       ? columns.map((col) =>
-          col.id === "actions" ? { ...col, meta: { onToolSelection } } : col,
+          col.id === "actions"
+            ? { ...col, meta: { onToolSelection, initialQuantities } }
+            : col,
         )
       : columns,
     getCoreRowModel: getCoreRowModel(),

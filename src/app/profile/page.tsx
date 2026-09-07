@@ -75,6 +75,9 @@ export default async function ProfilePage() {
                     Azonosító
                   </TableHead>
                   <TableHead className="text-black dark:text-white">
+                    Neve
+                  </TableHead>
+                  <TableHead className="text-black dark:text-white">
                     Státusz
                   </TableHead>
                   <TableHead className="text-black dark:text-white">
@@ -89,6 +92,7 @@ export default async function ProfilePage() {
                   <TableHead className="hidden text-black sm:table-cell dark:text-white">
                     Megjegyzés
                   </TableHead>
+                  <TableHead className="text-black dark:text-white" />
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -96,6 +100,9 @@ export default async function ProfilePage() {
                   activeRentals.map((rental) => (
                     <TableRow key={rental.id}>
                       <TableCell>{rental.id}</TableCell>
+                      <TableCell>
+                        {rental.title ?? `Bérlés #${rental.id}`}
+                      </TableCell>
                       <TableCell>{statusTitle(rental.status)}</TableCell>
                       <TableCell>{rental.startDate.toDateString()}</TableCell>
                       <TableCell className="hidden sm:table-cell">
@@ -105,11 +112,19 @@ export default async function ProfilePage() {
                       <TableCell className="hidden sm:table-cell">
                         {rental.endDateMessage}
                       </TableCell>
+                      <TableCell>
+                        <Link
+                          href={`/renting?repeat=${rental.id}`}
+                          className="text-primary underline"
+                        >
+                          Bérlés újra
+                        </Link>
+                      </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center italic">
+                    <TableCell colSpan={5} className="text-center italic">
                       Nincs aktív rendelésed
                     </TableCell>
                   </TableRow>
@@ -131,6 +146,9 @@ export default async function ProfilePage() {
                     Azonosító
                   </TableHead>
                   <TableHead className="text-black dark:text-white">
+                    Neve
+                  </TableHead>
+                  <TableHead className="text-black dark:text-white">
                     Státusz
                   </TableHead>
                   <TableHead className="text-black dark:text-white">
@@ -145,6 +163,7 @@ export default async function ProfilePage() {
                   <TableHead className="hidden text-black sm:table-cell dark:text-white">
                     Megjegyzés
                   </TableHead>
+                  <TableHead className="text-black dark:text-white" />
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -152,6 +171,9 @@ export default async function ProfilePage() {
                   expiredRentals.map((rental) => (
                     <TableRow key={rental.id}>
                       <TableCell>{rental.id}</TableCell>
+                      <TableCell>
+                        {rental.title ?? `Bérlés #${rental.id}`}
+                      </TableCell>
                       <TableCell>{statusTitle(rental.status)}</TableCell>
                       <TableCell>{rental.startDate.toDateString()}</TableCell>
                       <TableCell className="hidden sm:table-cell">
@@ -161,11 +183,19 @@ export default async function ProfilePage() {
                       <TableCell className="hidden sm:table-cell">
                         {rental.endDateMessage}
                       </TableCell>
+                      <TableCell>
+                        <Link
+                          href={`/renting?repeat=${rental.id}`}
+                          className="text-primary underline"
+                        >
+                          Bérlés újra
+                        </Link>
+                      </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center italic">
+                    <TableCell colSpan={5} className="text-center italic">
                       Még nincs archív rendelésed
                     </TableCell>
                   </TableRow>

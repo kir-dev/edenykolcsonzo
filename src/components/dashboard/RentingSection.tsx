@@ -92,9 +92,18 @@ function RentingSection(props: {
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-col">
                   <p>
+                    <strong>Bérlés neve:</strong>{" "}
+                    {rental.title ?? `Bérlés #${rental.id}`}
+                  </p>
+                  <p>
                     <strong>Bérlő:</strong>{" "}
                     {rental.user.fullName ?? rental.user.email}
                   </p>
+                  {rental.group && (
+                    <p>
+                      <strong>Csoport:</strong> {rental.group.name}
+                    </p>
+                  )}
                   <p>
                     <strong>Leadás időpontja:</strong>{" "}
                     <span>
@@ -110,6 +119,24 @@ function RentingSection(props: {
                         }`,
                     )}
                   </p>
+                  {rental.acceptedBy && (
+                    <p>
+                      <strong>Elfogadta:</strong>{" "}
+                      {rental.acceptedBy.fullName ?? rental.acceptedBy.email}
+                    </p>
+                  )}
+                  {rental.givenOutBy && (
+                    <p>
+                      <strong>Kiadta:</strong>{" "}
+                      {rental.givenOutBy.fullName ?? rental.givenOutBy.email}
+                    </p>
+                  )}
+                  {rental.returnedBy && (
+                    <p>
+                      <strong>Visszavette:</strong>{" "}
+                      {rental.returnedBy.fullName ?? rental.returnedBy.email}
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   {/* Status select */}

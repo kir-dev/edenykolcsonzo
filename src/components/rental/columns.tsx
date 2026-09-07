@@ -64,34 +64,53 @@ export const columns: ColumnDef<ToolWithAvailability>[] = [
     id: "actions",
     header: "Bérlés",
     cell: ({ row, column }) => {
-      const [amount, setAmount] = useState(0);
+      const meta = column.columnDef.meta as {
+        onToolSelection?: (toolId: number, amount: number) => void;
+        initialQuantities?: Record<number, number>;
+      };
       const tool = row.original;
-      const onToolSelection = (
-        column.columnDef.meta as {
-          onToolSelection?: (toolId: number, amount: number) => void;
-        }
-      )?.onToolSelection;
+      const initialAmount = meta?.initialQuantities?.[tool.id] ?? 0;
+      // isEditing controls button-vs-input, independent of the raw text in the
+      // input - so clearing the "1" while typing doesn't flip back to the button.
+      const [isEditing, setIsEditing] = useState(initialAmount > 0);
+      const [inputValue, setInputValue] = useState(
+        initialAmount > 0 ? String(initialAmount) : "",
+      );
+      const onToolSelection = meta?.onToolSelection;
 
-      const handleAmountChange = (newAmount: number) => {
-        if (newAmount > tool.availableQuantity) {
+      const commitAmount = (newAmount: number) => {
+        onToolSelection?.(tool.id, newAmount);
+      };
+
+      const startEditing = () => {
+        setIsEditing(true);
+        setInputValue("1");
+        commitAmount(1);
+      };
+
+      const handleBlur = () => {
+        const parsed = parseInt(inputValue);
+        if (!parsed || parsed <= 0) {
+          setIsEditing(false);
+          setInputValue("");
+          commitAmount(0);
+          return;
+        }
+        if (parsed > tool.availableQuantity) {
           toast.error(
             `Nincs ennyi ${tool.name}! ${tool.availableQuantity} darab elérhető!`,
           );
+          setInputValue(String(tool.availableQuantity));
+          commitAmount(tool.availableQuantity);
           return;
         }
-        setAmount(newAmount);
-        if (onToolSelection) {
-          onToolSelection(tool.id, newAmount);
-        }
+        setInputValue(String(parsed));
+        commitAmount(parsed);
       };
 
-      if (amount === 0) {
+      if (!isEditing) {
         return (
-          <Button
-            variant="default"
-            className="mx-1"
-            onClick={() => handleAmountChange(1)}
-          >
+          <Button variant="default" className="mx-1" onClick={startEditing}>
             Bérlés
           </Button>
         );
@@ -100,8 +119,9 @@ export const columns: ColumnDef<ToolWithAvailability>[] = [
         <Input
           type="number"
           min="0"
-          value={amount}
-          onChange={(e) => handleAmountChange(parseInt(e.target.value) || 0)}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onBlur={handleBlur}
           placeholder="Mennyiség"
           className="w-20"
         />

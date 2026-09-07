@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -22,8 +23,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import { Textarea } from "~/components/ui/textarea";
 import { cn } from "~/lib/utils";
+import { api } from "~/trpc/react";
 import { RentingDetails } from "~/types/renting";
 
 import { Input } from "../ui/input";
@@ -32,6 +41,7 @@ const now = new Date();
 
 const formSchema = z
   .object({
+    title: z.string().min(1, "Adj nevet a bérlésnek"),
     startDate: z
       .date()
       .min(now, "The start date should not be before the current date"),
@@ -44,6 +54,7 @@ const formSchema = z
       .string()
       .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid time format. Use HH:MM"),
     endDateComment: z.string().optional(),
+    groupId: z.string().optional(),
   })
   .refine((data) => data.endDate > data.startDate, {
     message: "The end date should be after the start date",
@@ -52,30 +63,95 @@ const formSchema = z
 
 export default function StartRentalForm({
   onSubmit,
+  defaultTitle,
+  defaultGroupId,
 }: {
   onSubmit: (details: RentingDetails) => void;
+  defaultTitle?: string;
+  defaultGroupId?: number;
 }) {
+  const { data: groups } = api.groups.getMine.useQuery();
+
   const formState = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      title: defaultTitle ?? "",
       startDate: now,
       startTime: "08:00",
       startDateComment: "",
       endDate: new Date(now.getTime() + 1000 * 60 * 60 * 24),
       endTime: "20:00",
       endDateComment: "",
+      groupId: defaultGroupId ? String(defaultGroupId) : undefined,
     },
   });
+
+  // Repeating a past rental resolves its title/group asynchronously (after this form has
+  // already mounted with empty defaults), so push the values in once they arrive.
+  useEffect(() => {
+    if (defaultTitle !== undefined) {
+      formState.setValue("title", defaultTitle);
+    }
+    if (defaultGroupId !== undefined) {
+      formState.setValue("groupId", String(defaultGroupId));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultTitle, defaultGroupId]);
 
   return (
     <div className="bg-card rounded-3xl p-6 shadow-lg">
       <Form {...formState}>
         <form
           onSubmit={formState.handleSubmit((data) =>
-            onSubmit(data as RentingDetails),
+            onSubmit({
+              ...data,
+              groupId: data.groupId ? parseInt(data.groupId) : undefined,
+            }),
           )}
           className="flex w-fit flex-col justify-center space-y-4 p-4"
         >
+          <FormField
+            control={formState.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem className="mb-6">
+                <FormLabel>Bérlés neve</FormLabel>
+                <FormControl>
+                  <Input placeholder="Pl. Gólyatábor" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={formState.control}
+            name="groupId"
+            render={({ field }) => (
+              <FormItem className="mb-6">
+                <FormLabel>Csoport (opcionális)</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger className="w-[240px]">
+                      <SelectValue placeholder="Nincs csoport kiválasztva" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {groups?.map((group) => (
+                      <SelectItem key={group.id} value={String(group.id)}>
+                        {group.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <div className="mb-12 flex w-full items-center justify-center not-md:flex-col md:space-x-20">
             <div className="flex flex-col space-y-6 not-md:mb-6">
               <FormField

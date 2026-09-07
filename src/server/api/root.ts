@@ -1,6 +1,8 @@
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 
+import { auditLogRouter } from "./routers/auditLog";
 import { circleMemberRouter } from "./routers/dashboard";
+import { groupsRouter } from "./routers/groups";
 import { pageContentRouter } from "./routers/pageContent";
 import { rentalsRouter } from "./routers/rentals";
 import { toolsRouter } from "./routers/tools";
@@ -17,6 +19,8 @@ export const appRouter = createTRPCRouter({
   dashboard: circleMemberRouter,
   pageContent: pageContentRouter,
   users: usersRouter,
+  auditLog: auditLogRouter,
+  groups: groupsRouter,
 });
 
 // export type definition of API

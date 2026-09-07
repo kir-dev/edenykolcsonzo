@@ -1,31 +1,93 @@
+import { type PrismaClient, type RentalStatus } from "@prisma/client";
 import { z } from "zod";
 
 import { isAdminRole } from "~/lib/utils";
+import { sendMail } from "~/server/mail/client";
+import {
+  rentalCreatedEmail,
+  rentalStatusChangedEmail,
+} from "~/server/mail/rentalEmails";
 
 import { createTRPCRouter, protectedProcedure } from "../trpc";
+
+// Maps a target rental status to the Rental field that should record who made
+// the transition happen. REQUESTED has no such field - it's set on creation.
+const STATUS_ACTOR_FIELD: Partial<
+  Record<RentalStatus, "acceptedById" | "givenOutById" | "returnedById">
+> = {
+  ACCEPTED: "acceptedById",
+  GIVEN_OUT: "givenOutById",
+  BROUGHT_BACK: "returnedById",
+};
+
+// Verifies the group exists and the user is currently an active member of it, throwing
+// otherwise. A rental must not be attachable to an arbitrary/foreign group.
+async function assertGroupMembership(
+  db: PrismaClient,
+  userId: string,
+  groupId: number | undefined,
+) {
+  if (groupId === undefined) {
+    return;
+  }
+  const membership = await db.userGroup.findUnique({
+    where: { userId_groupId: { userId, groupId } },
+  });
+  if (!membership) {
+    throw new Error("You are not a member of this group");
+  }
+}
 
 export const rentalsRouter = createTRPCRouter({
   get: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db.rental.findMany({
       include: {
         user: true,
+        group: true,
         ToolRental: {
           include: { tool: true },
         },
+        acceptedBy: true,
+        givenOutBy: true,
+        returnedBy: true,
       },
       orderBy: { createdAt: "desc" },
     });
   }),
 
+  getById: protectedProcedure
+    .input(z.number())
+    .query(async ({ ctx, input }) => {
+      const rental = await ctx.db.rental.findUnique({
+        where: { id: input },
+        include: {
+          group: true,
+          ToolRental: { include: { tool: true } },
+        },
+      });
+      if (!rental) {
+        throw new Error("Rental not found");
+      }
+      if (
+        rental.userId !== ctx.session!.user.id &&
+        !isAdminRole(ctx.session?.user.role)
+      ) {
+        throw new Error("Unauthorized");
+      }
+      return rental;
+    }),
+
   create: protectedProcedure
     .input(
       z.object({
+        title: z.string().min(1),
         toolId: z.number(),
         startDate: z.string(),
         endDate: z.string(),
         startDateMessage: z.string(),
         endDateMessage: z.string(),
         quantity: z.number().min(1),
+        groupId: z.number().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -37,15 +99,22 @@ export const rentalsRouter = createTRPCRouter({
       if (!tool) {
         throw new Error("Tool not found");
       }
+      await assertGroupMembership(
+        ctx.db,
+        ctx.session!.user.id,
+        input.groupId,
+      );
 
-      return ctx.db.rental.create({
+      const rental = await ctx.db.rental.create({
         data: {
+          title: input.title,
           status: "REQUESTED",
           userId: ctx.session!.user.id,
           startDate: new Date(input.startDate),
           endDate: new Date(input.endDate),
           startDateMessage: input.startDateMessage,
           endDateMessage: input.endDateMessage,
+          groupId: input.groupId,
           ToolRental: {
             create: {
               toolId: input.toolId,
@@ -54,15 +123,29 @@ export const rentalsRouter = createTRPCRouter({
           },
         },
       });
+
+      if (ctx.session!.user.email) {
+        const { subject, html } = rentalCreatedEmail({
+          rentalId: rental.id,
+          startDate: rental.startDate,
+          endDate: rental.endDate,
+          tools: [{ name: tool.name, quantity: input.quantity }],
+        });
+        void sendMail({ to: ctx.session!.user.email, subject, html });
+      }
+
+      return rental;
     }),
 
   createMultiple: protectedProcedure
     .input(
       z.object({
+        title: z.string().min(1),
         startDate: z.string(),
         endDate: z.string(),
         startDateMessage: z.string(),
         endDateMessage: z.string(),
+        groupId: z.number().optional(),
         tools: z.array(
           z.object({
             toolId: z.number(),
@@ -94,14 +177,22 @@ export const rentalsRouter = createTRPCRouter({
         }
       }
 
-      return ctx.db.rental.create({
+      await assertGroupMembership(
+        ctx.db,
+        ctx.session!.user.id,
+        input.groupId,
+      );
+
+      const rental = await ctx.db.rental.create({
         data: {
+          title: input.title,
           status: "REQUESTED",
           userId: ctx.session!.user.id,
           startDate: new Date(input.startDate),
           endDate: new Date(input.endDate),
           startDateMessage: input.startDateMessage,
           endDateMessage: input.endDateMessage,
+          groupId: input.groupId,
           ToolRental: {
             create: input.tools.map((tool) => ({
               toolId: tool.toolId,
@@ -115,6 +206,21 @@ export const rentalsRouter = createTRPCRouter({
           },
         },
       });
+
+      if (ctx.session!.user.email) {
+        const { subject, html } = rentalCreatedEmail({
+          rentalId: rental.id,
+          startDate: rental.startDate,
+          endDate: rental.endDate,
+          tools: rental.ToolRental.map((tr) => ({
+            name: tr.tool.name,
+            quantity: tr.quantity,
+          })),
+        });
+        void sendMail({ to: ctx.session!.user.email, subject, html });
+      }
+
+      return rental;
     }),
 
   updateStatus: protectedProcedure
@@ -130,10 +236,47 @@ export const rentalsRouter = createTRPCRouter({
       if (!isAdminRole(ctx.session?.user.role)) {
         throw new Error("Unauthorized");
       }
-      return ctx.db.rental.update({
-        where: { id: input.rentalId },
-        data: { status: input.status },
-      });
+
+      const actorId = ctx.session.user.id;
+      const actorField = STATUS_ACTOR_FIELD[input.status];
+
+      const [rental] = await ctx.db.$transaction([
+        ctx.db.rental.update({
+          where: { id: input.rentalId },
+          data: {
+            status: input.status,
+            ...(actorField ? { [actorField]: actorId } : {}),
+          },
+          include: {
+            user: true,
+            ToolRental: { include: { tool: true } },
+          },
+        }),
+        ctx.db.auditLog.create({
+          data: {
+            action: "RENTAL_STATUS_CHANGE",
+            entityType: "Rental",
+            entityId: String(input.rentalId),
+            actorId,
+            message: `#${input.rentalId} kérés státusza "${input.status}" lett`,
+          },
+        }),
+      ]);
+
+      if (rental.user.email) {
+        const { subject, html } = rentalStatusChangedEmail(input.status, {
+          rentalId: rental.id,
+          startDate: rental.startDate,
+          endDate: rental.endDate,
+          tools: rental.ToolRental.map((tr) => ({
+            name: tr.tool.name,
+            quantity: tr.quantity,
+          })),
+        });
+        void sendMail({ to: rental.user.email, subject, html });
+      }
+
+      return rental;
     }),
 
   getUserRentals: protectedProcedure
@@ -150,6 +293,11 @@ export const rentalsRouter = createTRPCRouter({
         where: {
           userId: userId,
         },
+        include: {
+          group: true,
+          ToolRental: { include: { tool: true } },
+        },
+        orderBy: { createdAt: "desc" },
       });
     }),
 

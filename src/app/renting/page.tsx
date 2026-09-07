@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 import RentingView from "~/components/rental/renting-view";
 import { getServerAuthSession } from "~/server/auth";
@@ -16,7 +17,9 @@ export default async function RentingPage() {
       <main className="flex flex-1 flex-col items-center justify-center">
         <h1>Kölcsönzés</h1>
         <div className="container flex justify-center px-8 py-10">
-          <RentingView />
+          <Suspense fallback={<div>Betöltés...</div>}>
+            <RentingView />
+          </Suspense>
         </div>
       </main>
     </HydrateClient>
