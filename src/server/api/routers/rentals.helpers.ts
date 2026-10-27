@@ -1,5 +1,16 @@
-import { type PrismaClient, type RentalStatus } from "@prisma/client";
+import {
+  type Prisma,
+  type PrismaClient,
+  type RentalStatus,
+  type Role,
+} from "@prisma/client";
 
+import {
+  canSetAnyStatus,
+  nextStatus,
+  rentalLabel,
+  statusTitle,
+} from "~/lib/utils";
 import { sendMail } from "~/server/mail/client";
 import {
   type RentalEmailInput,
@@ -35,11 +46,89 @@ export async function assertGroupMembership(
   }
 }
 
+// Throws unless the user may move the rental into the given status: admins and the EK
+// group leader may pick any status, everyone else only the next step. Returns the
+// rental's current status, so the update can be made conditional on it.
+export async function assertCanMoveToStatus(
+  db: PrismaClient,
+  user: { role: Role; ekLeader: boolean },
+  rentalId: number,
+  status: RentalStatus,
+) {
+  const rental = await db.rental.findUnique({
+    where: { id: rentalId },
+    select: { status: true },
+  });
+  if (!rental) {
+    throw new Error("Rental not found");
+  }
+  if (!canSetAnyStatus(user) && nextStatus(rental.status) !== status) {
+    throw new Error("Unauthorized");
+  }
+  return rental.status;
+}
+
+// Moves the rental into the new status, records who did it (see STATUS_ACTOR_FIELD)
+// and writes the audit log entry. The update also matches the status the permission
+// check saw, so two members clicking at once can't both advance the same rental.
+export async function applyStatusChange(
+  db: PrismaClient,
+  rentalId: number,
+  fromStatus: RentalStatus,
+  toStatus: RentalStatus,
+  actorId: string,
+) {
+  const actorField = STATUS_ACTOR_FIELD[toStatus];
+
+  return db.$transaction(async (tx) => {
+    const rental = await tx.rental.update({
+      where: { id: rentalId, status: fromStatus },
+      data: {
+        status: toStatus,
+        ...(actorField ? { [actorField]: actorId } : {}),
+      },
+      include: {
+        user: true,
+        acceptedBy: true,
+        ToolRental: { include: { tool: true } },
+      },
+    });
+    await tx.auditLog.create({
+      data: {
+        action: "RENTAL_STATUS_CHANGE",
+        entityType: "Rental",
+        entityId: String(rentalId),
+        actorId,
+        message: `${rentalLabel(rental)} kérés státusza "${statusTitle(toStatus)}" lett`,
+      },
+    });
+    return rental;
+  });
+}
+
+// Writes the "request created" audit log entry. Meant to run in the same transaction
+// as the rental's creation, so a request never exists without its log entry.
+export function logRentalCreated(
+  tx: Prisma.TransactionClient,
+  rental: { id: number; title: string | null },
+  actorId: string,
+) {
+  return tx.auditLog.create({
+    data: {
+      action: "RENTAL_CREATED",
+      entityType: "Rental",
+      entityId: String(rental.id),
+      actorId,
+      message: `${rentalLabel(rental)} kérés létrehozva`,
+    },
+  });
+}
+
 // Fires the "your rental request was created" email. Fire-and-forget: mail failures
 // must never fail the mutation that created the rental.
 //
-// DISABLED for now - only the ACCEPTED status-change email should send (see
-// notifyStatusChanged below and its callers in rentals.ts). Remove this early
+// DISABLED for now - only the status-change emails should send (see
+// notifyStatusChanged below and its caller in rentals.ts). Remove this early
 // return to turn it back on.
 export function notifyRentalCreated(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

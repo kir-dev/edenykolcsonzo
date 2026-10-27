@@ -25,11 +25,13 @@ declare module "next-auth" {
       id: string;
       // ...other properties
       role: Role;
+      ekLeader: boolean;
     } & DefaultSession["user"];
   }
   interface User {
     fullName: string;
     role: Role;
+    ekLeader: boolean;
   }
 }
 
@@ -65,6 +67,7 @@ export const authOptions: NextAuthOptions = {
         id: user.id,
         name: user.fullName,
         role: user.role,
+        ekLeader: user.ekLeader,
       },
     }),
     signIn({ account, profile }) {
@@ -124,11 +127,12 @@ export const authOptions: NextAuthOptions = {
       scope: "basic mail sn givenName displayName eduPersonEntitlement",
       async profile(profile: AuthSCHProfile) {
         const ekPekID = process.env.NODE_ENV === "production" ? 40 : 106;
-        const role = profile.eduPersonEntitlement.find(
+        const ekMembership = profile.eduPersonEntitlement.find(
           (group) => group.id === ekPekID && group.end === null,
-        )
-          ? "EK_MEMBER"
-          : "USER";
+        );
+        const role = ekMembership ? "EK_MEMBER" : "USER";
+        const ekLeader =
+          ekMembership?.status.toLowerCase().includes("körvezető") ?? false;
         // Update the user's role in the database based on the group membership.
         // The internal_id doesn't have a unique constraint, so we can't use a normal update here.
         // But we can't really have two users with the same internal_id, so this should be fine.
@@ -143,12 +147,22 @@ export const authOptions: NextAuthOptions = {
             data: { role: role },
           })
           .catch(console.error);
+        // The leader flag is synced for admins too, unlike the role above.
+        await db.user
+          .updateMany({
+            where: {
+              accounts: { some: { providerAccountId: profile.internal_id } },
+            },
+            data: { ekLeader },
+          })
+          .catch(console.error);
         // First time login, create a new user in the database. Handled by Auth.js.
         return {
           id: profile.internal_id,
           fullName: profile.displayName,
           email: profile.mail,
           role: role,
+          ekLeader,
         };
       },
     }),
