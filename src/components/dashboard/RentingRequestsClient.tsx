@@ -9,7 +9,11 @@ import RentingSection from "~/components/dashboard/RentingSection";
 import { api } from "~/trpc/react"; // client-side TRPC hook
 import { type RentalWithUserAndTools } from "~/types";
 
-export default function RentalRequestsClient() {
+export default function RentalRequestsClient({
+  canSetAnyStatus,
+}: {
+  canSetAnyStatus: boolean;
+}) {
   const queryClient = useQueryClient();
   const { data: rentals } = api.rentals.get.useQuery();
 
@@ -74,18 +78,22 @@ export default function RentalRequestsClient() {
 
   return (
     <div className="flex flex-col items-center p-6">
-      <div className="bg-card w-full max-w-4xl rounded-3xl p-6 shadow-lg">
+      <div className="bg-card w-full max-w-4xl rounded-3xl p-6 shadow-lg lg:max-w-none">
         <h1 className="mb-4 text-2xl sm:text-4xl">Beérkezett Kérések</h1>
-        {Object.entries(groupedRentals).map(([status, rentals]) => (
-          <RentingSection
-            key={status}
-            status={status}
-            rentals={rentals}
-            handleStatusChange={handleStatusChange}
-            handleRemoveRental={handleRemoveRental}
-            handleReduceQuantity={handleReduceQuantity}
-          />
-        ))}
+        {/* One column per status on desktop, stacked on mobile. */}
+        <div className="grid grid-cols-1 items-start gap-x-6 lg:grid-cols-2 xl:grid-cols-4">
+          {Object.entries(groupedRentals).map(([status, rentals]) => (
+            <RentingSection
+              key={status}
+              status={status}
+              rentals={rentals}
+              canSetAnyStatus={canSetAnyStatus}
+              handleStatusChange={handleStatusChange}
+              handleRemoveRental={handleRemoveRental}
+              handleReduceQuantity={handleReduceQuantity}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

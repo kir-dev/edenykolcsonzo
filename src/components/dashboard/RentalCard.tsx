@@ -3,6 +3,7 @@
 import { type RentalStatus } from "@prisma/client";
 import { format } from "date-fns";
 
+import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { nextStatus, statusActionTitle, statusTitle } from "~/lib/utils";
 import { type RentalWithUserAndTools } from "~/types";
 
 import { QuantityDialog } from "./QuantityDialog";
@@ -27,6 +29,9 @@ import { RentalDetails } from "./RentalDetails";
 export function RentalCard(props: {
   rental: RentalWithUserAndTools;
   isExpanded: boolean;
+  // Admins and the EK group leader may move the rental into any status; everyone
+  // else only gets a button for the next step.
+  canSetAnyStatus: boolean;
   toggleExpanded: (id: number) => void;
   handleStatusChange: (id: number, status: RentalStatus) => void;
   handleRemoveRental: (id: number) => void;
@@ -53,6 +58,7 @@ export function RentalCard(props: {
   const {
     rental,
     isExpanded,
+    canSetAnyStatus,
     toggleExpanded,
     handleStatusChange,
     handleRemoveRental,
@@ -64,10 +70,11 @@ export function RentalCard(props: {
     confirmQuantityChange,
     cancelQuantityChange,
   } = props;
+  const next = nextStatus(rental.status);
 
   return (
     <div className="bg-secondary my-2 w-full rounded-md px-3 py-2 sm:px-6">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-2">
         <div className="flex flex-col">
           <p>
             <strong>Bérlés neve:</strong>{" "}
@@ -75,36 +82,69 @@ export function RentalCard(props: {
           </p>
           <p>
             <strong>Bérlő:</strong> {rental.user.fullName ?? rental.user.email}
+            {rental.group && (
+              <span className="text-muted-foreground">
+                {" "}
+                ({rental.group.name})
+              </span>
+            )}
           </p>
           <p>
             <strong>Időszak:</strong>{" "}
             {format(rental.startDate, "yyyy. MM. dd.")} -{" "}
             {format(rental.endDate, "yyyy. MM. dd.")}
           </p>
+          {rental.givenOutBy && (
+            <p>
+              <strong>Kiadta:</strong>{" "}
+              {rental.givenOutBy.fullName ?? rental.givenOutBy.email}
+            </p>
+          )}
+          {rental.returnedBy && (
+            <p>
+              <strong>Visszavette:</strong>{" "}
+              {rental.returnedBy.fullName ?? rental.returnedBy.email}
+            </p>
+          )}
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          {/* Status select */}
-          <Select
-            defaultValue={rental.status}
-            onValueChange={(value) =>
-              handleStatusChange(rental.id, value as RentalStatus)
-            }
-          >
-            <SelectTrigger className="w-[130px] sm:w-[180px]">
-              <SelectValue placeholder="Státusz" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="REQUESTED">Beérkezett</SelectItem>
-              <SelectItem value="ACCEPTED">Elfogadott</SelectItem>
-              <SelectItem value="GIVEN_OUT">Kiadott</SelectItem>
-              <SelectItem value="BROUGHT_BACK">Visszahozott</SelectItem>
-            </SelectContent>
-          </Select>
+          {next && (
+            <Button onClick={() => handleStatusChange(rental.id, next)}>
+              {statusActionTitle(next)}
+            </Button>
+          )}
+
+          {canSetAnyStatus && (
+            <Select
+              value={rental.status}
+              onValueChange={(value) =>
+                handleStatusChange(rental.id, value as RentalStatus)
+              }
+            >
+              <SelectTrigger className="w-[130px] sm:w-[180px] xl:w-[140px]">
+                <SelectValue placeholder="Státusz" />
+              </SelectTrigger>
+              <SelectContent>
+                {(
+                  [
+                    "REQUESTED",
+                    "ACCEPTED",
+                    "GIVEN_OUT",
+                    "BROUGHT_BACK",
+                  ] as const
+                ).map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {statusTitle(status)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
 
           {/* Rental removal three-dot button */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="p-2">
+              <button className="ml-auto p-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5"

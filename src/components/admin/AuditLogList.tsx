@@ -2,6 +2,7 @@
 
 import { format } from "date-fns";
 
+import { translateStatusNames } from "~/lib/utils";
 import { api } from "~/trpc/react";
 
 export default function AuditLogList() {
@@ -24,7 +25,7 @@ export default function AuditLogList() {
                 key={log.id}
                 className="bg-secondary flex flex-col gap-1 rounded-md px-3 py-2 sm:px-6"
               >
-                <p>{log.message}</p>
+                <p>{translateStatusNames(log.message)}</p>
                 <p className="text-muted-foreground text-sm">
                   {format(log.createdAt, "yyyy. MM. dd. HH:mm:ss")} &middot;{" "}
                   {log.actor

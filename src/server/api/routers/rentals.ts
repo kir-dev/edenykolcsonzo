@@ -4,10 +4,12 @@ import { isAdminRole } from "~/lib/utils";
 
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import {
+  applyStatusChange,
+  assertCanMoveToStatus,
   assertGroupMembership,
+  logRentalCreated,
   notifyRentalCreated,
   notifyStatusChanged,
-  STATUS_ACTOR_FIELD,
 } from "./rentals.helpers";
 import { rentalsAdminProcedures } from "./rentals-admin";
 
@@ -77,24 +79,28 @@ export const rentalsRouter = createTRPCRouter({
       }
       await assertGroupMembership(ctx.db, ctx.session!.user.id, input.groupId);
 
-      const rental = await ctx.db.rental.create({
-        data: {
-          title: input.title,
-          status: "REQUESTED",
-          userId: ctx.session!.user.id,
-          startDate: new Date(input.startDate),
-          endDate: new Date(input.endDate),
-          startDateMessage: input.startDateMessage,
-          endDateMessage: input.endDateMessage,
-          groupId: input.groupId,
-          contactPhone: input.contactPhone,
-          ToolRental: {
-            create: {
-              toolId: input.toolId,
-              quantity: input.quantity,
+      const rental = await ctx.db.$transaction(async (tx) => {
+        const created = await tx.rental.create({
+          data: {
+            title: input.title,
+            status: "REQUESTED",
+            userId: ctx.session!.user.id,
+            startDate: new Date(input.startDate),
+            endDate: new Date(input.endDate),
+            startDateMessage: input.startDateMessage,
+            endDateMessage: input.endDateMessage,
+            groupId: input.groupId,
+            contactPhone: input.contactPhone,
+            ToolRental: {
+              create: {
+                toolId: input.toolId,
+                quantity: input.quantity,
+              },
             },
           },
-        },
+        });
+        await logRentalCreated(tx, created, ctx.session!.user.id);
+        return created;
       });
 
       notifyRentalCreated(ctx.session!.user.email, {
@@ -151,29 +157,33 @@ export const rentalsRouter = createTRPCRouter({
 
       await assertGroupMembership(ctx.db, ctx.session!.user.id, input.groupId);
 
-      const rental = await ctx.db.rental.create({
-        data: {
-          title: input.title,
-          status: "REQUESTED",
-          userId: ctx.session!.user.id,
-          startDate: new Date(input.startDate),
-          endDate: new Date(input.endDate),
-          startDateMessage: input.startDateMessage,
-          endDateMessage: input.endDateMessage,
-          groupId: input.groupId,
-          contactPhone: input.contactPhone,
-          ToolRental: {
-            create: input.tools.map((tool) => ({
-              toolId: tool.toolId,
-              quantity: tool.quantity,
-            })),
+      const rental = await ctx.db.$transaction(async (tx) => {
+        const created = await tx.rental.create({
+          data: {
+            title: input.title,
+            status: "REQUESTED",
+            userId: ctx.session!.user.id,
+            startDate: new Date(input.startDate),
+            endDate: new Date(input.endDate),
+            startDateMessage: input.startDateMessage,
+            endDateMessage: input.endDateMessage,
+            groupId: input.groupId,
+            contactPhone: input.contactPhone,
+            ToolRental: {
+              create: input.tools.map((tool) => ({
+                toolId: tool.toolId,
+                quantity: tool.quantity,
+              })),
+            },
           },
-        },
-        include: {
-          ToolRental: {
-            include: { tool: true },
+          include: {
+            ToolRental: {
+              include: { tool: true },
+            },
           },
-        },
+        });
+        await logRentalCreated(tx, created, ctx.session!.user.id);
+        return created;
       });
 
       notifyRentalCreated(ctx.session!.user.email, {
@@ -204,36 +214,24 @@ export const rentalsRouter = createTRPCRouter({
         throw new Error("Unauthorized");
       }
 
-      const actorId = ctx.session.user.id;
-      const actorField = STATUS_ACTOR_FIELD[input.status];
+      const currentStatus = await assertCanMoveToStatus(
+        ctx.db,
+        ctx.session.user,
+        input.rentalId,
+        input.status,
+      );
 
-      const [rental] = await ctx.db.$transaction([
-        ctx.db.rental.update({
-          where: { id: input.rentalId },
-          data: {
-            status: input.status,
-            ...(actorField ? { [actorField]: actorId } : {}),
-          },
-          include: {
-            user: true,
-            acceptedBy: true,
-            ToolRental: { include: { tool: true } },
-          },
-        }),
-        ctx.db.auditLog.create({
-          data: {
-            action: "RENTAL_STATUS_CHANGE",
-            entityType: "Rental",
-            entityId: String(input.rentalId),
-            actorId,
-            message: `#${input.rentalId} kérés státusza "${input.status}" lett`,
-          },
-        }),
-      ]);
+      const rental = await applyStatusChange(
+        ctx.db,
+        input.rentalId,
+        currentStatus,
+        input.status,
+        ctx.session.user.id,
+      );
 
-      // Only the ACCEPTED transition sends an email for now - GIVEN_OUT and
-      // BROUGHT_BACK notifications aren't ready yet.
-      if (input.status === "ACCEPTED") {
+      // ACCEPTED, GIVEN_OUT and BROUGHT_BACK each have their own email. Moving a
+      // rental back to REQUESTED doesn't notify anyone.
+      if (input.status !== "REQUESTED") {
         notifyStatusChanged(rental.user.email, input.status, {
           rentalId: rental.id,
           title: rental.title,

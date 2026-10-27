@@ -115,6 +115,9 @@ model User {
   roomNumber    Int?
   profileImage  String?
   phoneNumber   String?
+  // Whether the user is the leader (körvezető) of the EK PÉK group. Synced from the
+  // AuthSCH SSO profile on every login; lets them move rentals into any status.
+  ekLeader      Boolean   @default(false)
   email         String?   @unique
   emailVerified DateTime?
   image         String?
